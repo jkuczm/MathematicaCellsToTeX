@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project name="DeployApplication" default="main" basedir="..">
+	<description>
+		This file runs test suite in all Mathematica versions and,
+		if they pass, deploys application to an archive file.
+	</description>
+	
+	
+	<import file="${WWBCommonPath}/init.xml"/>
+	
+	
+	<target name="main" depends="runTests">
+		<antcall target="cleanArchive"/>
+		<antcall target="clean"/>
+		<antcall target="appbuild"/>
+		<antcall target="createArchive"/>
+	</target>
+	
+</project>

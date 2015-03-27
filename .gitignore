@@ -1,0 +1,6 @@
+.directory
+/build
+/dependencies
+/private
+/buildScripts/build.properties
+/CellsToTeX.zip
