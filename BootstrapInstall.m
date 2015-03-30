@@ -5,7 +5,7 @@ Get["https://raw.githubusercontent.com/jkuczm/MathematicaBootstrapInstaller/v0.1
 
 BootstrapInstall[
 	"CellsToTeX",
-	"https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.1.0/CellsToTeX.zip"
+	"https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.1.1/CellsToTeX.zip"
 	,
 	{{
 		"SyntaxAnnotations",
