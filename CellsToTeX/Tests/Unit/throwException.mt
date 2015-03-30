@@ -325,6 +325,190 @@ Module[{thrownBy, errType},
 
 
 (* ::Subsection:: *)
+(*Known exceptions*)
+
+
+Module[{thrownBy, elementType, subType, expr},
+	Test[
+		Catch[
+			throwException[thrownBy, {"Failed", elementType, subType}, {expr}];
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[CellsToTeXException["Failed", elementType, subType],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::failed,
+					"MessageParameters" -> {
+						HoldForm[thrownBy],
+						HoldForm @ CellsToTeXException[
+							"Failed", elementType, subType
+						],
+						HoldForm[expr]
+					}
+				]
+			],
+			CellsToTeXException["Failed", elementType, subType]
+		}
+		,
+		TestID -> "Known exception: Failed"
+	]
+]
+
+
+Module[{thrownBy, elementType, subType, missing, available},
+	Test[
+		Catch[
+			throwException[thrownBy, {"Missing", elementType, subType},
+				{missing, available}
+			];
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[CellsToTeXException["Missing", elementType, subType],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::missing,
+					"MessageParameters" -> {
+						HoldForm[thrownBy],
+						HoldForm @ CellsToTeXException[
+							"Missing", elementType, subType
+						],
+						HoldForm[elementType],
+						HoldForm[missing],
+						HoldForm[available]
+					}
+				]
+			],
+			CellsToTeXException["Missing", elementType, subType]
+		}
+		,
+		TestID -> "Known exception: Missing"
+	]
+]
+
+
+Module[{thrownBy, elementType, subType, invalid},
+	Test[
+		Catch[
+			throwException[thrownBy, {"Invalid", elementType, subType},
+				{invalid}
+			];
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[CellsToTeXException["Invalid", elementType, subType],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::invalid,
+					"MessageParameters" -> {
+						HoldForm[thrownBy],
+						HoldForm @ CellsToTeXException[
+							"Invalid", elementType, subType
+						],
+						HoldForm[elementType],
+						HoldForm[invalid]
+					}
+				]
+			],
+			CellsToTeXException["Invalid", elementType, subType]
+		}
+		,
+		TestID -> "Known exception: Invalid"
+	]
+]
+
+
+Module[
+	{
+		thrownBy, elementType, subType, unsupported, supported,
+		prettifyPatternsResult, $prettifyPatternsLog = {}
+	},
+	Block[{prettifyPatterns},
+		mockFunction[prettifyPatterns,
+			$prettifyPatternsLog, prettifyPatternsResult
+		];
+		
+		Test[
+			Catch[
+				throwException[thrownBy, {"Unsupported", elementType, subType},
+					{{unsupported}, {supported}}
+				];
+				,
+				_
+				,
+				HoldComplete
+			]
+			,
+			HoldComplete @@ {
+				Failure[
+					CellsToTeXException["Unsupported", elementType, subType],
+					Association[
+						"MessageTemplate" :> CellsToTeXException::unsupported,
+						"MessageParameters" -> {
+							HoldForm[thrownBy],
+							HoldForm @ CellsToTeXException[
+								"Unsupported", elementType, subType
+							],
+							HoldForm[elementType],
+							HoldForm[{unsupported}],
+							HoldForm[{prettifyPatternsResult}]
+						}
+					]
+				],
+				CellsToTeXException["Unsupported", elementType, subType]
+			}
+			,
+			TestID -> "Known exception: Unsupported"
+		]
+	]
+]
+
+
+Module[{thrownBy, elementType, subType, val1, val2},
+	Test[
+		Catch[
+			throwException[thrownBy, {"Error", elementType, subType},
+				{val1, val2}
+			];
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[CellsToTeXException["Error", elementType, subType],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::error,
+					"MessageParameters" -> {
+						HoldForm[thrownBy],
+						HoldForm @ CellsToTeXException[
+							"Error", elementType, subType
+						],
+						HoldForm[val1],
+						HoldForm[val2]
+					}
+				]
+			],
+			CellsToTeXException["Error", elementType, subType]
+		}
+		,
+		TestID -> "Known exception: Error"
+	]
+]
+
+
+(* ::Subsection:: *)
 (*Incorrect arguments*)
 
 
