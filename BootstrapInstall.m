@@ -9,7 +9,7 @@ BootstrapInstall[
 	,
 	{{
 		"SyntaxAnnotations",
-		"https://github.com/jkuczm/MathematicaSyntaxAnnotations/releases/download/v0.1.2/SyntaxAnnotations.zip"
+		"https://github.com/jkuczm/MathematicaSyntaxAnnotations/releases/download/v0.1.3/SyntaxAnnotations.zip"
 	}}
 	,
 	"AdditionalFailureMessage" ->
