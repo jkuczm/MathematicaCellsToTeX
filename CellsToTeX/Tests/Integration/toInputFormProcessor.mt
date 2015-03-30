@@ -148,6 +148,7 @@ Test[
 					HoldForm @
 						toInputFormProcessor[{"Boxes" -> RowBox[{"f", "["}]}],
 					HoldForm @ CellsToTeXException["Invalid", "Boxes"],
+					HoldForm @ "Boxes",
 					HoldForm @ RowBox[{"f", "["}]
 				}
 			]

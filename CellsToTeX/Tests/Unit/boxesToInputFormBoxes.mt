@@ -114,6 +114,7 @@ Test[
 				"MessageParameters" -> {
 					HoldForm @ boxesToInputFormBoxes[RowBox[{"f", "["}]],
 					HoldForm @ CellsToTeXException["Invalid", "Boxes"],
+					HoldForm @ "Boxes",
 					HoldForm @ RowBox[{"f", "["}]
 				}
 			]
