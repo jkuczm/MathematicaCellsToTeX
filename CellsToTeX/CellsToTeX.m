@@ -884,14 +884,14 @@ SetAttributes[throwException, HoldFirst]
 
 throwException[
 	HoldComplete[thrownBy_] | thrownBy_,
-	{"Unsupported", elementType_},
+	{"Unsupported", elementType_, subTypes___},
 	(List | HoldComplete)[unsupported_, supported_],
 	messageName:(_String | Automatic):Automatic
 ] :=
 	With[{supportedPretty = prettifyPatterns /@ supported},
 		throwException[
 			thrownBy,
-			{"Unsupported", elementType},
+			{"Unsupported", elementType, subTypes},
 			HoldComplete[elementType, unsupported, supportedPretty],
 			messageName
 		]
@@ -907,6 +907,19 @@ throwException[
 		thrownBy,
 		{"Missing", elementType, subTypes},
 		HoldComplete[elementType, missing, available],
+		messageName
+	]
+
+throwException[
+	HoldComplete[thrownBy_] | thrownBy_,
+	{"Invalid", elementType_, subTypes___},
+	(List | HoldComplete)[boxes_],
+	messageName:(_String | Automatic):Automatic
+] :=
+	throwException[
+		thrownBy,
+		{"Invalid", elementType, subTypes},
+		HoldComplete[elementType, boxes],
 		messageName
 	]
 
