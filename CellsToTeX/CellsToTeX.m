@@ -1201,10 +1201,17 @@ functionCall:boxesToString[
 			Switch[formatType,
 				InputForm,
 					makeStringDefault[RowBox[l_List]] := makeString[l];
-					makeStringDefault[" "] = " ";
-					makeStringDefault["\n"] = "\n";
 					makeStringDefault[str_String] :=
-						StringTake[ToString[RowBox[{str}]], {3, -3}];
+						StringReplace[
+							StringTake[ToString[str], {2, -2}],
+							{
+								"\\\"" -> "\"",
+								"\\n" -> "\n",
+								"\\r" -> "\r",
+								"\\t" -> "\t",
+								"\\\\" -> "\\"
+							}
+						];
 					makeStringDefault[arg_] := ToString[arg],
 				OutputForm,
 					makeStringDefault[RowBox[l_List]] :=
