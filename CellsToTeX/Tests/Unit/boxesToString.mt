@@ -397,7 +397,11 @@ Test[
 Test[
 	tmpBoxesToString[SubscriptBox["a", "\"b\""], {}]
 	,
-	"\\(a\\_\"b\"\\)"
+	If[$VersionNumber >= 10.2,
+		"SubscriptBox[\"a\", \"\\\"b\\\"\"]"
+	(* else *),
+		"\\(a\\_\"b\"\\)"
+	]
 	,
 	TestID -> "InputForm: formatting box"
 ]
@@ -405,7 +409,11 @@ Test[
 Test[
 	tmpBoxesToString[RowBox[{"\"d\"", SubscriptBox["a", "\"b\""], "c"}], {}]
 	,
-	"\"d\"\\(a\\_\"b\"\\)c"
+	If[$VersionNumber >= 10.2,
+		"\"d\"SubscriptBox[\"a\", \"\\\"b\\\"\"]c"
+	(* else *),
+		"\"d\"\\(a\\_\"b\"\\)c"
+	]
 	,
 	TestID -> "InputForm: formatting box in RowBox"
 ]
@@ -413,7 +421,11 @@ Test[
 Test[
 	tmpBoxesToString["\"d\!\(a\_b\)c\"", {}]
 	,
-	"d\\(a\\_b\\)c"
+	If[$VersionNumber >= 10.2,
+		"dSubscriptBox[\"a\", \"b\"]c"
+	(* else *),
+		"d\\(a\\_b\\)c"
+	]
 	,
 	TestID -> "InputForm: formatting box embedded in String"
 ]
