@@ -262,6 +262,14 @@ Test[
 	TestID -> "OutputForm: ASCII: \\[PlusMinus]"
 ]
 
+Test[
+	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "ASCII"]
+	,
+	"+-"
+	,
+	TestID -> "OutputForm: ASCII: \"\\[PlusMinus]\""
+]
+
 
 (* ::Subsection:: *)
 (*InputForm*)
@@ -480,6 +488,14 @@ Test[
 	"\\[PlusMinus]"
 	,
 	TestID -> "InputForm: ASCII: \\[PlusMinus]"
+]
+
+Test[
+	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "ASCII"]
+	,
+	"\"\\[PlusMinus]\""
+	,
+	TestID -> "InputForm: ASCII: \"\\[PlusMinus]\""
 ]
 
 
