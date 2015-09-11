@@ -1,10 +1,10 @@
 (* Paclet Info File *)
 
-(* created 2015/03/30*)
+(* created 2015/09/11*)
 
 Paclet[
     Name -> "CellsToTeX",
-    Version -> "0.1.1",
+    Version -> "0.1.2",
     MathematicaVersion -> "6+",
     Description -> "Convert Mathematica cells to TeX, retaining formatting",
     Creator -> "Jakub Kuczmarski",
