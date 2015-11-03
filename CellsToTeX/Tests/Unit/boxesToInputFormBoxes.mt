@@ -28,6 +28,30 @@ UsingFrontEnd @ Test[
 ]
 
 
+UsingFrontEnd @ Test[
+	RowBox[{"a", "+", "b", "  "}] // boxesToInputFormBoxes
+	,
+	RowBox[{"a", " ", "+", " ", "b"}]
+	,
+	TestID -> "RowBox: Plus with non-semantic whitespace"
+]
+
+UsingFrontEnd @ Test[
+	RowBox[{
+		"f", "[", "\[IndentingNewLine]",
+		RowBox[{
+			SuperscriptBox["x", "2"], ",", "\[IndentingNewLine]",
+			"y"
+		}], "\[IndentingNewLine]",
+		"]"
+	}] // boxesToInputFormBoxes
+	,
+	RowBox[{"f", "[", RowBox[{RowBox[{"x", "^", "2"}], ",", " ", "y"}], "]"}]
+	,
+	TestID -> "RowBox, nested, SuperscriptBox: \
+function, two args, newlines between args and next to brackets"
+]
+
 Test[
 	" " // boxesToInputFormBoxes
 	,
@@ -121,6 +145,8 @@ Test[
 		],
 		CellsToTeXException["Invalid", "Boxes"]
 	}
+	,
+	Message[Syntax::bktmcp, DisplayForm[RowBox[List["f", "["]]], "]", "", ""]
 	,
 	TestID -> "Exception: Invalid Boxes"
 ]

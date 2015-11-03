@@ -1164,7 +1164,7 @@ boxesToInputFormBoxes[
 
 functionCall:boxesToInputFormBoxes[boxes_] :=
 	Module[{expr, str, newBoxes},
-		expr = MakeExpression[boxes, StandardForm];
+		expr = MakeExpression[StripBoxes[boxes], StandardForm];
 		If[Head[expr] =!= HoldComplete,
 			throwException[functionCall, {"Invalid", "Boxes"}, {boxes}]
 		];

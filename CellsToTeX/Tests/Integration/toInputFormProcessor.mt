@@ -156,6 +156,8 @@ Test[
 		CellsToTeXException["Invalid", "Boxes"]
 	}
 	,
+	Message[Syntax::bktmcp, DisplayForm[RowBox[List["f", "["]]], "]", "", ""]
+	,
 	TestID -> "Exception: Invalid Boxes"
 ]
 
