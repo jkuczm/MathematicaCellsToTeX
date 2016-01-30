@@ -445,11 +445,15 @@ present."
 
 headRulesToBoxRules::usage =
 "\
-headRulesToBoxRules[{head1 -> name1, head2 -> {name2, mathArgPos2}, ...] \
-returns List of delayed rules that transform boxes with given heads to TeX \
-formatting commands with given names. If righ hand side of rule is a List \
-it's first argument is used as TeX command name and second as positions of \
-arguments that in TeX will be typeset in math mode."
+headRulesToBoxRules[head -> \"name\"] \
+returns delayed rule that transforms box, with given head, to TeX formatting \
+command with given name.\
+
+headRulesToBoxRules[head -> {\"name\", pos}] \
+arguments with given positions pos will be typeset, in TeX, in math mode.\
+
+headRulesToBoxRules[{rule1, rule2, ...}] \
+returns List of transformed rules."
 
 
 commonestAnnotationTypes::usage =
@@ -1252,34 +1256,32 @@ removeMathMode[str_String] :=
 (*headRulesToBoxRules*)
 
 
-headRulesToBoxRules[rules:{_Rule...}] :=
+SetAttributes[headRulesToBoxRules, Listable]
+
+
+headRulesToBoxRules[boxHead_ -> texCommandName_String] :=
 	With[
 		{
+			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
 			argStart = $commandCharsToTeX[[2, 1]],
 			argEnd = $commandCharsToTeX[[3, 1]]
 		},
-		If[Length[#2] === 2,
-			With[
-				{
-					comm = $commandCharsToTeX[[1, 1]] <> First[#2],
-					mathArgPositions = Last[#2]
-				},
-				#1[boxes___] :>
-					comm <> (
-						argStart <> # <> argEnd& /@ MapAt[
-							removeMathMode,
-							makeString /@ {boxes},
-							mathArgPositions
-						]
-					)
-			]
-		(* else *),
-			With[{comm = $commandCharsToTeX[[1, 1]] <> #2},
-				#1[boxes___] :>
-					comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
-			]
-		]& @@@
-			rules
+		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
+			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
+	]
+
+headRulesToBoxRules[boxHead_ -> {texCommandName_String, mathArgsPos_}] :=
+	With[
+		{
+			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
+			argStart = $commandCharsToTeX[[2, 1]],
+			argEnd = $commandCharsToTeX[[3, 1]]
+		},
+		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
+			comm <> (
+				argStart <> # <> argEnd& /@
+					MapAt[removeMathMode, makeString /@ {boxes}, mathArgsPos]
+			)
 	]
 
 
