@@ -21,45 +21,61 @@ $ContextPath =
 
 Block[{$commandCharsToTeX = {"%" -> "%%", "<" -> "%<", ">" -> "%>"}},
 	TestMatch[
-		{FractionBox -> "frac"} // headRulesToBoxRules
+		FractionBox -> "frac" // headRulesToBoxRules
 		,
-		{
-			FractionBox[Verbatim[Pattern][name_, Verbatim[___]]] :>
-				"%frac" <> ("<" <> makeString[#] <> ">"& /@ {name_})
-		}
+		Verbatim[HoldPattern] @ FractionBox[
+			Verbatim[Pattern][pattName_, Verbatim[___]],
+			Verbatim[OptionsPattern[]]
+		] :>
+			"%frac" <> ("<" <> makeString[#] <> ">"& /@ {pattName_})
 		,
-		TestID -> "1 rule"
-	];
+		TestID -> "Single rule"
+	]
+]
 	
+Block[{$commandCharsToTeX = {"A" -> "B", "C" -> "D", "E" -> "F"}},
 	TestMatch[
-		{myBox -> {"myCommand", {{1}, {3}}}} // headRulesToBoxRules
+		myBox -> {"myCommand", {{1}, {3}}} // headRulesToBoxRules
 		,
-		{
-			myBox[Verbatim[Pattern][name_, Verbatim[___]]] :>
-				"%myCommand" <> (
-					"<" <> # <> ">"& /@ MapAt[
-						removeMathMode,
-						makeString /@ {name_},
-						{{1}, {3}}
-					]
-				)
-		}
+		Verbatim[HoldPattern] @ myBox[
+			Verbatim[Pattern][pattName_, Verbatim[___]],
+			Verbatim[OptionsPattern[]]
+		] :>
+			"AmyCommand" <> (
+				"C" <> # <> "E"& /@ MapAt[
+					removeMathMode,
+					makeString /@ {pattName_},
+					{{1}, {3}}
+				]
+			)
 		,
-		TestID -> "1 rule: with math mode args positions"
-	];
+		TestID -> "Single rule: with math mode args positions"
+	]
+]
 	
+Block[{$commandCharsToTeX = {"|" -> "x", "(" -> "y", ")" -> "z"}},
 	TestMatch[
-		{SubscriptBox -> "sub", SuperscriptBox -> "sup"} //
+		{SubscriptBox -> {"sub", 1}, UnderoverscriptBox -> "uo"} //
 			headRulesToBoxRules
 		,
 		{
-			SubscriptBox[Verbatim[Pattern][name_, Verbatim[___]]] :>
-				"%sub" <> ("<" <> makeString[#] <> ">"& /@ {name_}),
-			SuperscriptBox[Verbatim[Pattern][name_, Verbatim[___]]] :>
-				"%sup" <> ("<" <> makeString[#] <> ">"& /@ {name_})
+			Verbatim[HoldPattern] @ SubscriptBox[
+				Verbatim[Pattern][pattName1_, Verbatim[___]],
+				Verbatim[OptionsPattern[]]
+			] :>
+				"|sub" <> (
+					"(" <> # <> ")"& /@
+						MapAt[removeMathMode, makeString /@ {pattName1_}, 1]
+				)
+			,
+			Verbatim[HoldPattern] @ UnderoverscriptBox[
+				Verbatim[Pattern][pattName2_, Verbatim[___]],
+				Verbatim[OptionsPattern[]]
+			] :>
+				"|uo" <> ("(" <> makeString[#] <> ")"& /@ {pattName2_})
 		}
 		,
-		TestID -> "2 rules"
+		TestID -> "List of rules"
 	]
 ]
 
