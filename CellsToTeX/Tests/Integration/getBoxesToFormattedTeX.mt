@@ -92,6 +92,13 @@ Test[
 	,
 	TestID -> "SubscriptBox: nested"
 ]
+Test[
+	SubscriptBox["x", "y", BaseStyle -> {}] // tmpBoxesToString
+	,
+	"\\mmaSub{x}{y}"
+	,
+	TestID -> "SubscriptBox: with option"
+]
 
 Test[
 	SuperscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
@@ -107,6 +114,15 @@ Test[
 	"\\mmaSup{\\mmaSup{a}{b}}{\\mmaSup{c}{d}}"
 	,
 	TestID -> "SuperscriptBox: nested"
+]
+Test[
+	SuperscriptBox["a", "y",
+		DefaultBaseStyle -> {}, MultilineFunction -> Automatic
+	] // tmpBoxesToString
+	,
+	"\\mmaSup{a}{y}"
+	,
+	TestID -> "SuperscriptBox: with options"
 ]
 
 Test[
@@ -128,6 +144,14 @@ Test[
 	,
 	TestID -> "SubsuperscriptBox: nested"
 ]
+Test[
+	SubsuperscriptBox["a", "1", "2", MultilineFunction -> None] //
+		tmpBoxesToString
+	,
+	"\\mmaSubSup{a}{1}{2}"
+	,
+	TestID -> "SubsuperscriptBox: with option"
+]
 
 Test[
 	UnderscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
@@ -144,6 +168,15 @@ Test[
 	,
 	TestID -> "UnderscriptBox: nested"
 ]
+Test[
+	UnderscriptBox["\[Alpha]", "\[Beta]",
+		DiacriticalPositioning -> Automatic, LimitsPositioning -> Automatic
+	] // tmpBoxesToString
+	,
+	"\\mmaUnder{\\alpha}{\\(\\beta\\)}"
+	,
+	TestID -> "UnderscriptBox: math mode, with options"
+]
 
 Test[
 	OverscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
@@ -159,6 +192,14 @@ Test[
 	"\\mmaOver{\\mmaOver{a}{b}}{\\mmaOver{c}{d}}"
 	,
 	TestID -> "OverscriptBox: nested"
+]
+Test[
+	OverscriptBox["a", "\[Gamma]", MultilineFunction -> Automatic] //
+		tmpBoxesToString
+	,
+	"\\mmaOver{a}{\\(\\gamma\\)}"
+	,
+	TestID -> "OverscriptBox: partial math mode, with option"
 ]
 
 Test[
@@ -180,6 +221,14 @@ Test[
 	,
 	TestID -> "UnderoverscriptBox: nested"
 ]
+Test[
+	UnderoverscriptBox["\[Delta]", "x", "\[Pi]", BaseStyle -> {}] //
+		tmpBoxesToString
+	,
+	"\\mmaUnderOver{\\delta}{x}{\\(\\pi\\)}"
+	,
+	TestID -> "UnderoverscriptBox: partial math mode, with option"
+]
 
 Test[
 	FractionBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
@@ -196,6 +245,16 @@ Test[
 	,
 	TestID -> "FractionBox: nested"
 ]
+Test[
+	FractionBox["\[Epsilon]", "z",
+		DenominatorAlignment -> Center, FractionLine -> Automatic,
+		MultilineFunction -> Automatic, NumeratorAlignment -> Center
+	] // tmpBoxesToString
+	,
+	"\\mmaFrac{\\(\\epsilon\\)}{z}"
+	,
+	TestID -> "FractionBox: partial math mode, with options"
+]
 
 Test[
 	SqrtBox["\[Pi]"] // tmpBoxesToString
@@ -210,6 +269,13 @@ Test[
 	"\\mmaSqrt{\\mmaSqrt{a}}"
 	,
 	TestID -> "SqrtBox: nested"
+]
+Test[
+	SqrtBox["x", SurdForm -> False] // tmpBoxesToString
+	,
+	"\\mmaSqrt{x}"
+	,
+	TestID -> "SqrtBox: with option"
 ]
 
 Test[
@@ -226,6 +292,14 @@ Test[
 	"\\mmaRadical{\\mmaRadical{a}{b}}{\\mmaRadical{c}{d}}"
 	,
 	TestID -> "RadicalBox: nested"
+]
+Test[
+	RadicalBox["x", "\[Zeta]", ExponentPosition -> {0.2, 0.1}] //
+		tmpBoxesToString
+	,
+	"\\mmaRadical{x}{\\(\\zeta\\)}"
+	,
+	TestID -> "RadicalBox: partial math mode, with option"
 ]
 
 If[$VersionNumber >= 10,
