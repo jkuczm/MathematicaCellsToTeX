@@ -436,13 +436,6 @@ If value of FormatType option is different than InputForm and OutputForm \
 CellsToTeXException[\"Unsupported\", \"FormatType\"] is thrown."
 
 
-removeMathMode::usage =
-"\
-removeMathMode[str] \
-returns String str with removed outer math mode delimiters, if they were \
-present."
-
-
 headRulesToBoxRules::usage =
 "\
 headRulesToBoxRules[head -> {\"name\", argsNo}] \
@@ -1235,18 +1228,6 @@ functionCall:boxesToString[
 			];
 			makeString[boxes]
 		]
-	]
-
-
-(* ::Subsubsection:: *)
-(*removeMathMode*)
-
-
-removeMathMode[str_String] :=
-	StringReplace[str,
-		StartOfString ~~ ws1:WhitespaceCharacter... ~~ "\\(" ~~ contents___ ~~
-			"\\)" ~~ ws2:WhitespaceCharacter... ~~ EndOfString :>
-				ws1 <> contents <> ws2
 	]
 
 
