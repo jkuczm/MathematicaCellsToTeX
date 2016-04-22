@@ -92,9 +92,9 @@ $boxHeadsToTeXCommands::usage =
 "\
 $boxHeadsToTeXCommands \
 is a List of rules assigning TeX command specifications to box heads. \
-Right hand side of rules can be a String with TeX command name or List of two \
-elements with first being TeX command name and second being positions of \
-command argumnets that, in TeX, will be typeset in math mode."
+Right hand side of rules can be a List of two elements with first being a \
+String with TeX command name and second being number of arguments of TeX \
+command."
 
 
 $charsToTeX::usage =
@@ -1689,15 +1689,15 @@ $boxesToFormattedTeX = {}
 
 
 $boxHeadsToTeXCommands = {
-	SubscriptBox -> {"mmaSub", 1},
-	SuperscriptBox -> {"mmaSup", 1},
-	SubsuperscriptBox -> {"mmaSubSup", 1},
-	UnderscriptBox -> {"mmaUnder", 1},
-	OverscriptBox -> {"mmaOver", 1},
-	UnderoverscriptBox -> {"mmaUnderOver", 1},
-	FractionBox -> "mmaFrac",
+	SubscriptBox -> {"mmaSub", 2},
+	SuperscriptBox -> {"mmaSup", 2},
+	SubsuperscriptBox -> {"mmaSubSup", 3},
+	UnderscriptBox -> {"mmaUnder", 2},
+	OverscriptBox -> {"mmaOver", 2},
+	UnderoverscriptBox -> {"mmaUnderOver", 3},
+	FractionBox -> {"mmaFrac", 2},
 	SqrtBox -> {"mmaSqrt", 1},
-	RadicalBox -> {"mmaRadical", 1}
+	RadicalBox -> {"mmaRadical", 2}
 }
 
 
