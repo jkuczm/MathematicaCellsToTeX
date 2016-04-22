@@ -445,12 +445,10 @@ present."
 
 headRulesToBoxRules::usage =
 "\
-headRulesToBoxRules[head -> \"name\"] \
-returns delayed rule that transforms box, with given head, to TeX formatting \
-command with given name.\
-
-headRulesToBoxRules[head -> {\"name\", pos}] \
-arguments with given positions pos will be typeset, in TeX, in math mode.\
+headRulesToBoxRules[head -> {\"name\", argsNo}] \
+returns delayed rule that transforms box expression, with given head, to TeX \
+formatting command with given name. Box can contain argsNo arguments and \
+options.\
 
 headRulesToBoxRules[{rule1, rule2, ...}] \
 returns List of transformed rules."
@@ -1259,29 +1257,18 @@ removeMathMode[str_String] :=
 SetAttributes[headRulesToBoxRules, Listable]
 
 
-headRulesToBoxRules[boxHead_ -> texCommandName_String] :=
+headRulesToBoxRules[
+	boxHead_ -> {texCommandName_String, argsNo_Integer?NonNegative}
+] :=
 	With[
 		{
 			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
 			argStart = $commandCharsToTeX[[2, 1]],
 			argEnd = $commandCharsToTeX[[3, 1]]
-		},
-		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
+		}
+		,
+		HoldPattern @ boxHead[boxes:Repeated[_, {argsNo}], OptionsPattern[]] :>
 			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
-	]
-
-headRulesToBoxRules[boxHead_ -> {texCommandName_String, mathArgsPos_}] :=
-	With[
-		{
-			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
-			argStart = $commandCharsToTeX[[2, 1]],
-			argEnd = $commandCharsToTeX[[3, 1]]
-		},
-		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
-			comm <> (
-				argStart <> # <> argEnd& /@
-					MapAt[removeMathMode, makeString /@ {boxes}, mathArgsPos]
-			)
 	]
 
 
