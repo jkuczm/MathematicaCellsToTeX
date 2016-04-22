@@ -1681,7 +1681,42 @@ $linearBoxesToTeX = {
 (*$boxesToFormattedTeX*)
 
 
-$boxesToFormattedTeX = {}
+$boxesToFormattedTeX =
+	(
+		#1["\[Integral]", scr_, OptionsPattern[]] :>
+			With[
+				{
+					argStart = $commandCharsToTeX[[2, 1]],
+					argEnd = $commandCharsToTeX[[3, 1]]
+				}
+				,
+				StringJoin[
+					$commandCharsToTeX[[1, 1]], #2,
+					argStart, "\\int", argEnd,
+					argStart, makeString[scr], argEnd
+				]
+			]
+	)& @@@ {
+		SubscriptBox -> "mmaSubM",
+		SuperscriptBox -> "mmaSupM"
+	}
+
+AppendTo[$boxesToFormattedTeX,
+	SubsuperscriptBox["\[Integral]", sub_, sup_, OptionsPattern[]] :>
+		With[
+			{
+				argStart = $commandCharsToTeX[[2, 1]],
+				argEnd = $commandCharsToTeX[[3, 1]]
+			}
+			,
+			StringJoin[
+				$commandCharsToTeX[[1, 1]], "mmaSubSupM",
+				argStart, "\\int", argEnd,
+				argStart, makeString[sub], argEnd,
+				argStart, makeString[sup], argEnd
+			]
+		]
+]
 
 
 (* ::Subsubsection:: *)

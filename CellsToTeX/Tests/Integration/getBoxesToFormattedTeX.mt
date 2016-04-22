@@ -99,6 +99,13 @@ Test[
 	,
 	TestID -> "SubscriptBox: with option"
 ]
+Test[
+	SubscriptBox["\[Integral]", "a"] // tmpBoxesToString
+	,
+	"\\mmaSubM{\\int}{a}"
+	,
+	TestID -> "SubscriptBox: \\[Integral]"
+]
 
 Test[
 	SuperscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
@@ -123,6 +130,14 @@ Test[
 	"\\mmaSup{a}{y}"
 	,
 	TestID -> "SuperscriptBox: with options"
+]
+Test[
+	SuperscriptBox["\[Integral]", "\[Pi]", DefaultBaseStyle -> {}] //
+		tmpBoxesToString
+	,
+	"\\mmaSupM{\\int}{\\(\\pi\\)}"
+	,
+	TestID -> "SuperscriptBox: \\[Integral]"
 ]
 
 Test[
@@ -151,6 +166,14 @@ Test[
 	"\\mmaSubSup{a}{1}{2}"
 	,
 	TestID -> "SubsuperscriptBox: with option"
+]
+Test[
+	SubsuperscriptBox["\[Integral]", "a", "\[Pi]"] //
+		tmpBoxesToString
+	,
+	"\\mmaSubSupM{\\int}{a}{\\(\\pi\\)}"
+	,
+	TestID -> "SubsuperscriptBox: \\[Integral]"
 ]
 
 Test[

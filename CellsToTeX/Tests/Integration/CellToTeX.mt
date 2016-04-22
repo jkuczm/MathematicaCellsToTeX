@@ -56,7 +56,7 @@ Test[
 	,
 	"\
 \\begin{mmaCell}[morelst={morefvcmdparams=\\mathbbm 1},morefunctionlocal={y}]{Input}
-  \\mmaSubSup{\\int}{r}{\\(\\infty\\)}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
+  \\mmaSubSupM{\\int}{r}{\\(\\infty\\)}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
 \\end{mmaCell}"
 	,
 	TestID -> "pure boxes: formatting, syntax: Input"
