@@ -1843,10 +1843,13 @@ getBoxesToFormattedTeX[OptionsPattern[]] :=
 			(* else *),
 				{
 					str_String :>
-						StringJoin @ Replace[
-							Characters[makeStringDefault[str]],
-							characterRules,
-							{1}
+						StringReplace[
+							StringJoin @ Replace[
+								Characters[makeStringDefault[str]],
+								characterRules,
+								{1}
+							],
+							"\\)\\(" -> ""
 						]
 				}
 			]

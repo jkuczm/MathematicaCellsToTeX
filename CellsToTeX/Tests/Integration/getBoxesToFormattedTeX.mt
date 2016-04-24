@@ -68,6 +68,14 @@ Test[
 	TestID -> "}"
 ]
 
+Test[
+	"\[Alpha]\[Beta]\[Gamma]" // tmpBoxesToString
+	,
+	"\\(\\alpha\\beta\\gamma\\)"
+	,
+	TestID -> "\\[Alpha]\\[Beta]\\[Gamma]"
+]
+
 
 Test[
 	StyleBox[StyleBox["a", Red], Green] // tmpBoxesToString

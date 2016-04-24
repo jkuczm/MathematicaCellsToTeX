@@ -67,10 +67,13 @@ TestMatch[
 	,
 	{
 		Verbatim[Pattern][pattName_, Verbatim[_String]] :>
-			StringJoin @ Replace[
-				Characters[makeStringDefault[pattName_]],
-				{testChar -> testCharReplacement},
-				{1}
+			StringReplace[
+				StringJoin @ Replace[
+					Characters[makeStringDefault[pattName_]],
+					{testChar -> testCharReplacement},
+					{1}
+				],
+				"\\)\\(" -> ""
 			]
 	}
 	,
