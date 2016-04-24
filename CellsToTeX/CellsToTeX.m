@@ -58,7 +58,7 @@ $cellStyleOptions \
 is a List of rules with left hand sides being Lists of two elements. First \
 element is a pattern matching particular cell styles, second element is \
 option name. Right hand sides of rules are default values of options that \
-will be used for styles mathcing said pattern."
+will be used for styles matching said pattern."
 
 
 $commandCharsToTeX::usage =
