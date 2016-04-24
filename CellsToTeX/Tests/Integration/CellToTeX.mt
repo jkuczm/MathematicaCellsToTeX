@@ -79,6 +79,52 @@ UsingFrontEnd @ Test[
 ]
 
 
+Block[{\[Phi]1},
+	\[Phi]1[x_] := x;
+	
+	Test[
+		CellToTeX[
+			Sum[
+				\[Phi]1[\[Alpha]]^2 + \[Chi]\[Omega]\[Nu]\[Sigma]\[Tau],
+				{\[Alpha], 1, \[Pi]}
+			] // MakeBoxes
+			,
+			"Style" -> "Input"
+		]
+		,
+		"\
+\\begin{mmaCell}{Input}
+  \\mmaUnderOver{\\(\\sum\\)}{\\mmaFnc{\\(\\alpha\\)}=1}{\\(\\pi\\)}(\\mmaSup{\\mmaDef{\\(\\phi\\)1}[\\mmaFnc{\\(\\alpha\\)}]}{2}+\\mmaUnd{\\(\\chi\\omega\\nu\\sigma\\tau\\)})
+\\end{mmaCell}"
+		,
+		TestID -> "pure boxes: formatting, syntax, non-ASCII symbols: Input"
+	]
+]
+
+
+Block[{\[Phi]1},
+	\[Phi]1[x_] := x;
+	
+	UsingFrontEnd @ Test[
+		CellToTeX[
+			Sum[
+				\[Phi]1[\[Alpha]]^2 + \[Chi]\[Omega]\[Nu]\[Sigma]\[Tau],
+				{\[Alpha], 1, \[Pi]}
+			] // MakeBoxes
+			,
+			"Style" -> "Code"
+		]
+		,
+		"\
+\\begin{mmaCell}{Code}
+  Sum[\\mmaDef{\\[Phi]1}[\\mmaFnc{\\[Alpha]}]^2 + \\mmaUnd{\\[Chi]\\[Omega]\\[Nu]\\[Sigma]\\[Tau]}, {\\mmaFnc{\\[Alpha]}, 1, Pi}]
+\\end{mmaCell}"
+		,
+		TestID -> "pure boxes: formatting, syntax, non-ASCII symbols: Code"
+	]
+]
+
+
 Test[
 	CellToTeX[
 		BoxData @ RowBox[{
@@ -174,9 +220,9 @@ UsingFrontEnd @ Test[
 	]
 	,
 	"\
-\\begin{mmaCell}[addtoindex=3,morelocal={x, x_}]{Code}
-  Solve[a*\\mmaFnc{x} + c == 0, \\mmaFnc{x}]; 
-  Module[{x, \\mmaLoc{a}}, x_ = x \\[PlusMinus] 1]
+\\begin{mmaCell}[addtoindex=3,morefunctionlocal={x},morelocal={x_}]{Code}
+  Solve[a*x + c == 0, x]; 
+  Module[{\\mmaLoc{x}, \\mmaLoc{a}}, x_ = \\mmaLoc{x} \\[PlusMinus] 1]
 \\end{mmaCell}"
 	,
 	TestID -> "Code cell: no formatting, different syntax roles, index"
