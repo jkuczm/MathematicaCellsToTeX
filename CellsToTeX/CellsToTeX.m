@@ -447,6 +447,13 @@ headRulesToBoxRules[{rule1, rule2, ...}] \
 returns List of transformed rules."
 
 
+defaultOrFirst::usage =
+"\
+defaultOrFirst[list, default] \
+returns default if it's member of given list, otherwise first element of list \
+is returned. Given list should have at least one element."
+
+
 commonestAnnotationTypes::usage =
 "\
 commonestAnnotationTypes[boxes] \
@@ -1251,6 +1258,15 @@ headRulesToBoxRules[
 		HoldPattern @ boxHead[boxes:Repeated[_, {argsNo}], OptionsPattern[]] :>
 			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
 	]
+
+
+(* ::Subsubsection:: *)
+(*defaultOrFirst*)
+
+
+defaultOrFirst[{___, default_, ___}, default_] := default
+
+defaultOrFirst[{first_, ___}, _] := first
 
 
 (* ::Subsubsection:: *)
