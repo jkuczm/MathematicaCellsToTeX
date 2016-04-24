@@ -2045,7 +2045,13 @@ functionCall:trackCellIndexProcessor[data:{___?OptionQ}] :=
 Options[annotateSyntaxProcessor] = {
 	"BoxRules" -> {},
 	"AnnotationTypesToTeX" :> $annotationTypesToTeX,
-	"AnnotationTypesNormalizer" -> Composition[First, NormalizeAnnotationTypes]
+	"AnnotationTypesNormalizer" ->
+		Composition[First, NormalizeAnnotationTypes],
+	"CommonestTypesAsTeXOptions" -> "ASCII",
+	"BoxesToAnnotationTypes" :>
+		Append[$BoxesToAnnotationTypes,
+			_String?SyntaxAnnotations`Private`symbolNameQ -> {"DefinedSymbol"}
+		]
 }
 
 
@@ -2054,18 +2060,21 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 		{
 			boxes, boxRules, texOptions,
 			annotationTypesToTeX, annotationTypesNormalizer,
-			keyVal, preprocessedBoxes, commonestTypes
+			commonestTypesAsTeXOptions, boxesToAnnotationTypes,
+			preprocessedBoxes, commonestTypes
 		}
 		,
 		{
 			boxes, boxRules, texOptions,
-			annotationTypesToTeX, annotationTypesNormalizer
+			annotationTypesToTeX, annotationTypesNormalizer,
+			commonestTypesAsTeXOptions, boxesToAnnotationTypes
 		} =
 			processorDataLookup[functionCall,
 				{data, Options[annotateSyntaxProcessor]},
 				{
 					"Boxes", "BoxRules", "TeXOptions",
-					"AnnotationTypesToTeX", "AnnotationTypesNormalizer"
+					"AnnotationTypesToTeX", "AnnotationTypesNormalizer",
+					"CommonestTypesAsTeXOptions", "BoxesToAnnotationTypes"
 				}
 			];
 		
@@ -2075,28 +2084,54 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 				"BoxRules" -> {
 					SyntaxBox[box_, types__] :>
 						SyntaxBox[box, annotationTypesNormalizer[types]]
-				}
+				},
+				"BoxesToAnnoattiontypes" -> boxesToAnnotationTypes
+					
 			];
 		
-		commonestTypes = commonestAnnotationTypes[preprocessedBoxes, False];
+		Switch[commonestTypesAsTeXOptions,
+			"ASCII" | True,
+				commonestTypes =
+					commonestAnnotationTypes[
+						preprocessedBoxes,
+						TrueQ[commonestTypesAsTeXOptions]
+					];
 		
-		preprocessedBoxes = preprocessedBoxes /.
-			(SyntaxBox[#1, #2, ___] :> #1 & @@@ commonestTypes);
+				preprocessedBoxes =
+					preprocessedBoxes /.
+						(SyntaxBox[#1, #2, ___] :> #1 & @@@ commonestTypes);
 		
-		keyVal = annotationTypesToKeyVal[
-			commonestTypes
-			,
-			Append[
-				(* MapAt[First, annotationTypesToTeX, {All, 2}]
-					doesn't work in v8. *)
-				#[[0]][#[[1]], "more" <> #[[2, 1]]] & /@ annotationTypesToTeX
-				,
-				unsupportedType_ :>
-					throwException[functionCall,
-						{"Unsupported", "AnnotationType"},
-						{unsupportedType, annotationTypesToTeX[[All, 1]]}
+				texOptions =
+					Join[texOptions,
+						annotationTypesToKeyVal[
+							commonestTypes
+							,
+							Append[
+								(* MapAt[First, annotationTypesToTeX, {All, 2}]
+									doesn't work in v8. *)
+								#[[0]][#[[1]], "more" <> #[[2, 1]]] & /@
+									annotationTypesToTeX
+								,
+								unsupportedType_ :>
+									throwException[functionCall,
+										{"Unsupported", "AnnotationType"},
+										{
+											unsupportedType,
+											annotationTypesToTeX[[All, 1]]
+										}
+									]
+							]
+						]
 					]
-			]
+			,
+			False,
+				Null
+			,
+			_,
+				throwException[functionCall,
+					{"Unsupported", "OptionValue", "CommonestTypesAsTeXOptions"},
+					{commonestTypesAsTeXOptions, {True, "ASCII", False}}
+				]
 		];
 		
 		{
@@ -2106,7 +2141,7 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 					annotationRulesToBoxRules[annotationTypesToTeX],
 					boxRules
 				],
-			"TeXOptions" -> Join[texOptions, keyVal],
+			"TeXOptions" -> texOptions,
 			data
 		}
 	]
