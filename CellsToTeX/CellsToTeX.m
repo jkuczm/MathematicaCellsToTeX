@@ -456,9 +456,11 @@ is returned. Given list should have at least one element."
 
 commonestAnnotationTypes::usage =
 "\
-commonestAnnotationTypes[boxes] \
+commonestAnnotationTypes[boxes, specialChars] \
 returns List of rules with left hand sides being symbol names and right hand \
-sides being most common annotation types of those symbols in given boxes."
+sides being most common annotation types of those symbols in given boxes. \
+If specialChars is True all symbols are inspected, if it's False only symbols \
+with names composed of ASCII characters are inspected."
 
 
 annotationTypesToKeyVal::usage =
@@ -1273,52 +1275,42 @@ defaultOrFirst[{first_, ___}, _] := first
 (*commonestAnnotationTypes*)
 
 
-commonestAnnotationTypes[boxes_] :=
-	Module[{symbolsWithTypes, commonestTypes, incrementTypeCounter},
-		incrementTypeCounter =
-			Function[{name, type},
-				If[ValueQ[symbolsWithTypes[name][type]],
-					symbolsWithTypes[name][type]++
-				(* else *),
-					symbolsWithTypes[name][type] = 1
-				]
-			];
-		
-		boxes /. {
-			SyntaxBox[name_String, type_, ___] :>
-				incrementTypeCounter[name, type]
-			,
-			name_String?SyntaxAnnotations`Private`symbolNameQ :>
-				incrementTypeCounter[name, "DefinedSymbol"]
-		};
-		Scan[
-			With[{name = #[[1, 1, 0, 1]], type = #[[1, 1, 1]], count = #[[2]]},
-				If[
-					!ListQ[commonestTypes[name]] ||
-						Last[commonestTypes[name]] < count
-				,
-					commonestTypes[name] = {type, count}
-				(* else *),
-					If[Last[commonestTypes[name]] === count,
-						PrependTo[commonestTypes[name], type]
+commonestAnnotationTypes[boxes_, specialChars : True | False] := 
+	(* Get list of symbol name - symbol type pairs. *)
+	Cases[boxes,
+		SyntaxBox[
+			If[specialChars,
+				name_String
+			(* else *),
+				name_String /;
+					StringMatchQ[name, RegularExpression["[[:ascii:]]*"]]
+			],
+			type_,
+			___
+		] :>
+			{name, type}
+		,
+		{0, Infinity}
+	] //
+		Tally //
+		(* Gather tallied name - type pairs by name. *)
+		GatherBy[#, #[[1, 1]]&]& //
+		(* Convert each group to name -> commonestType rule. *)
+		Map[
+			With[{name = #[[1, 1, 1]], typeMult = #[[All, 2]]},
+				name ->
+					(*	Select default type, if it's among commonest types,
+						otherwise take first of commonest types. *)
+					defaultOrFirst[
+						(* Pick types with maximal number of occurrences.*)
+						Pick[#[[All, 1, 2]], typeMult, Max @ typeMult],
+						defaultAnnotationType[name]
 					]
-				]
 			]&
 			,
-			SubValues[symbolsWithTypes]
-		];
-		With[{name = #[[1, 1, 1]], types = #[[-1, ;; -2]]},
-			name ->
-				First @ If[Length[types] > 1,
-					Replace[
-						Select[types, # === defaultAnnotationType[name]&, 1],
-						{} -> types
-					]
-				(* else *),
-					types
-				]
-		] & /@ DownValues[commonestTypes]
-	]
+			#
+		]&
+	
 
 
 (* ::Subsubsection:: *)
@@ -2083,7 +2075,7 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 				}
 			];
 		
-		commonestTypes = commonestAnnotationTypes[preprocessedBoxes];
+		commonestTypes = commonestAnnotationTypes[preprocessedBoxes, False];
 		
 		preprocessedBoxes = preprocessedBoxes /.
 			(SyntaxBox[#1, #2, ___] :> #1 & @@@ commonestTypes);
