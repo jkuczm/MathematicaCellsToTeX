@@ -124,15 +124,6 @@ extracting styles needed for conversion of some boxes."
 (*Utilities*)
 
 
-getBoxesToFormattedTeX::usage =
-"\
-getBoxesToFormattedTeX[] \
-returns List of rules transforming boxes to formatted TeX verbatim code. \
-By default returned rules include $linearBoxesToTeX, $boxesToFormattedTeX and \
-rules automatically generated from $boxHeadsToTeXCommands, $charsToTeX and \
-$commandCharsToTeX."
-
-
 defaultAnnotationType::usage =
 "\
 defaultAnnotationType[sym] or defaultAnnotationType[\"name\"] \
@@ -1844,45 +1835,6 @@ makeStringDefault["\[IndentingNewLine]"] := "\n"
 makeStringDefault[boxes_List] := StringJoin[makeString /@ boxes]
 
 makeStringDefault[BoxData[boxes_]] := makeString[boxes]
-
-
-(* ::Subsubsection:: *)
-(*getBoxesToFormattedTeX*)
-
-
-Options[getBoxesToFormattedTeX] = {
-	"BoxRules" :> Join[$linearBoxesToTeX, $boxesToFormattedTeX],
-	"BoxHeadsToTeXCommands" :> $boxHeadsToTeXCommands,
-	"CharacterRules" :> Join[$charsToTeX, $commandCharsToTeX]
-}
-
-
-getBoxesToFormattedTeX[OptionsPattern[]] :=
-	With[{characterRules = OptionValue["CharacterRules"]},
-		Join[
-			OptionValue["BoxRules"],
-			headRulesToBoxRules[OptionValue["BoxHeadsToTeXCommands"]],
-			If[characterRules === {},
-				{}
-			(* else *),
-				{
-					str_String :>
-						StringReplace[
-							StringJoin @ Replace[
-								Characters[makeStringDefault[str]],
-								characterRules,
-								{1}
-							],
-							StringJoin[
-								$commandCharsToTeX[[1, 1]], ")",
-								$commandCharsToTeX[[1, 1]], "("
-							] ->
-								""
-						]
-				}
-			]
-		]
-	]
 
 
 (* ::Subsubsection:: *)

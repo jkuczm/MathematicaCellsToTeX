@@ -11,7 +11,6 @@ TestSuite[{
 	"boxesToInputFormBoxes.mt",
 	"boxesToString.mt",
 	"headRulesToBoxRules.mt",
-	"getBoxesToFormattedTeX.mt",
 	"charToTeX.mt",
 	"defaultAnnotationType.mt",
 	"defaultOrFirst.mt",
