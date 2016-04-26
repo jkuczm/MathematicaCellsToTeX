@@ -90,11 +90,13 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 			};
 			testExtendedBoxRules = {
 				testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS,
-				Verbatim[Pattern][pattName1_, Verbatim[Blank][String]] :>
-					StringReplace[makeStringDefault[pattName1_], {
-						"testLookedupStringRuleLHS" ->
-							"testLookedupStringRuleRHS"
-					}],
+				HoldPattern[
+					Verbatim[Pattern][pattName1_, Verbatim[Blank][String]] :>
+						StringReplace[makeStringDefault[pattName1_], {
+							"testLookedupStringRuleLHS" ->
+								"testLookedupStringRuleRHS"
+						}]
+				],
 				With[{testData = testData},
 					HoldPattern[
 						Verbatim[Pattern][
