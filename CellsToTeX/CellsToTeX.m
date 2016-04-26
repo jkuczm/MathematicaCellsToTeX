@@ -1340,9 +1340,16 @@ annotationRulesToBoxRules[rules:{_Rule...}] :=
 		rules
 		,
 		(type_ -> {_, command_}) :>
-			With[{start = "\\" <> command <> "{"},
+			With[
+				{
+					start =
+						$commandCharsToTeX[[1, 1]] <> command <>
+							$commandCharsToTeX[[2, 1]],
+					end = $commandCharsToTeX[[3, 1]]
+				}
+				,
 				SyntaxBox[boxes_, type, ___] :>
-					start <> makeString[boxes] <> "}"
+					start <> makeString[boxes] <> end
 			]
 		,
 		{1}
