@@ -70,12 +70,14 @@ Test[
 	TestID -> "}"
 ]
 
-Test[
-	"\[Alpha]\[Beta]\[Gamma]" // tmpBoxesToString
-	,
-	"\\(\\alpha\\beta\\gamma\\)"
-	,
-	TestID -> "\\[Alpha]\\[Beta]\\[Gamma]"
+Block[{$commandCharsToTeX = {"&" -> "test1", "[" -> "test2", "]" -> "test3"}},
+	Test[
+		"\[Alpha]\[Beta]\[Gamma]" // tmpBoxesToString
+		,
+		"&(&alpha&beta&gamma&)"
+		,
+		TestID -> "\\[Alpha]\\[Beta]\\[Gamma]"
+	]
 ]
 
 

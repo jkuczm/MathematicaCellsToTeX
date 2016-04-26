@@ -73,7 +73,11 @@ TestMatch[
 					{testChar -> testCharReplacement},
 					{1}
 				],
-				"\\)\\(" -> ""
+				StringJoin[
+					$commandCharsToTeX[[1, 1]], ")",
+					$commandCharsToTeX[[1, 1]], "("
+				] ->
+					""
 			]
 	}
 	,
