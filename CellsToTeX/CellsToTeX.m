@@ -341,6 +341,13 @@ Begin["`Internal`"]
 ClearAll["`*"]
 
 
+$whitespace::usage =
+"\
+$whitespace \
+represents a sequence of whitespace characters, including IndentingNewLine, \
+in StringExpression."
+
+
 throwException::usage =
 "\
 throwException[thrownBy, {errType, errSubtype, ...}, {val1, val2, ...}] or \
@@ -877,6 +884,19 @@ Protect @ Evaluate @ Names[
 
 addIncorrectArgsDefinition /@
 	Names["CellsToTeX`Internal`" ~~ Except["$"] ~~ Except["`"]...]
+
+
+(* ::Subsubsection:: *)
+(*$whitespace*)
+
+
+(* Whitespace didn't match IndentingNewLine before Mathematica v10.1. *)
+$whitespace =
+	If[StringMatchQ["\[IndentingNewLine]", Whitespace],
+		Whitespace
+	(* else *),
+		(WhitespaceCharacter | "\[IndentingNewLine]")..
+	]
 
 
 (* ::Subsubsection:: *)

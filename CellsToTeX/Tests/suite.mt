@@ -1,4 +1,5 @@
 TestSuite[{
+	"Unit/$whitespace.mt",
 	"Unit/addIncorrectArgsDefinition.mt",
 	"Unit/throwException.mt",
 	"Unit/handleException.mt",
