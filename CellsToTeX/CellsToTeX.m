@@ -1882,7 +1882,14 @@ charToTeX[char_] :=
 				]
 		]
 		,
-		" " -> ""
+		With[{escChar = $commandCharsToTeX[[1, 1]]},
+			{
+				" " -> "",
+				"\\{" -> escChar <> "{", "{" -> $commandCharsToTeX[[2, 1]],
+				"\\}" -> escChar <> "}", "}" -> $commandCharsToTeX[[3, 1]],
+				"\\\\" -> "\\\\", "\\" -> escChar
+			}
+		]
 	]
 
 
