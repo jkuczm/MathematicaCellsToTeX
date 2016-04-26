@@ -31,6 +31,7 @@ Test[
 				cellLabelProcessor, extractCellOptionsProcessor
 			],
 		"BoxRules" :> $linearBoxesToTeX,
+		"StringRules" -> {},
 		"CharacterEncoding" -> "ASCII",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -51,7 +52,13 @@ Test[
 				annotateSyntaxProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
-		"BoxRules" :> getBoxesToFormattedTeX[],
+		"BoxRules" :>
+			Join[
+				$linearBoxesToTeX,
+				$boxesToFormattedTeX,
+				headRulesToBoxRules[$boxHeadsToTeXCommands]
+			],
+		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -71,7 +78,13 @@ Test[
 				trackCellIndexProcessor, mmaCellProcessor,
 				cellLabelProcessor, extractCellOptionsProcessor
 			],
-		"BoxRules" :> getBoxesToFormattedTeX[],
+		"BoxRules" :>
+			Join[
+				$linearBoxesToTeX,
+				$boxesToFormattedTeX,
+				headRulesToBoxRules[$boxHeadsToTeXCommands]
+			],
+		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> True,
@@ -91,7 +104,13 @@ Test[
 				trackCellIndexProcessor, mmaCellProcessor,
 				cellLabelProcessor, extractCellOptionsProcessor
 			],
-		"BoxRules" :> getBoxesToFormattedTeX[],
+		"BoxRules" :>
+			Join[
+				$linearBoxesToTeX,
+				$boxesToFormattedTeX,
+				headRulesToBoxRules[$boxHeadsToTeXCommands]
+			],
+		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> False,
@@ -113,7 +132,13 @@ Test[
 				messageLinkProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
-		"BoxRules" :> getBoxesToFormattedTeX[],
+		"BoxRules" :>
+			Join[
+				$linearBoxesToTeX,
+				$boxesToFormattedTeX,
+				headRulesToBoxRules[$boxHeadsToTeXCommands]
+			],
+		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> False,

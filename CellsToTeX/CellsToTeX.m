@@ -97,11 +97,11 @@ String with TeX command name and second being number of arguments of TeX \
 command."
 
 
-$charsToTeX::usage =
+$stringsToTeX::usage =
 "\
-$charsToTeX \
-is a List of rules transforming characters to TeX suitable for inclusion in \
-formatted TeX verbatim code."
+$stringsToTeX \
+is a List of rules transforming string fragments to TeX suitable for \
+inclusion in formatted TeX verbatim code."
 
 
 $annotationTypesToTeX::usage =
@@ -1655,7 +1655,14 @@ $cellStyleOptions = {
 		],
 	{"Code", "BoxRules"} :> $linearBoxesToTeX,
 	{"Input" | "Output" | "Print" | "Message", "BoxRules"} :>
-		getBoxesToFormattedTeX[],
+		Join[
+			$linearBoxesToTeX,
+			$boxesToFormattedTeX,
+			headRulesToBoxRules[$boxHeadsToTeXCommands]
+		],
+	{"Code", "StringRules"} -> {},
+	{"Input" | "Output" | "Print" | "Message", "StringRules"} :>
+		Join[$stringsToTeX, $commandCharsToTeX],
 	{"Code", "CharacterEncoding"} -> "ASCII",
 	{"Input" | "Output" | "Print" | "Message", "CharacterEncoding"} ->
 		"Unicode",
@@ -1762,10 +1769,10 @@ $boxHeadsToTeXCommands = {
 
 
 (* ::Subsubsection:: *)
-(*$charsToTeX*)
+(*$stringsToTeX*)
 
 
-$charsToTeX = {
+$stringsToTeX = {
 	"\[RightSkeleton]" -> ">>"
 	,
 	char_ /; First@ToCharacterCode[char] > 126 :>
@@ -1773,13 +1780,13 @@ $charsToTeX = {
 }
 
 If[$VersionNumber >=10,
-	$charsToTeX =
+	$stringsToTeX =
 		Join[
 			{
 				ToExpression["\"\\[LeftAssociation]\""] -> "<|",
 				ToExpression["\"\\[RightAssociation]\""] -> "|>"
 			},
-			$charsToTeX
+			$stringsToTeX
 		]
 ]
 
@@ -2236,26 +2243,46 @@ functionCall:messageLinkProcessor[data:{___?OptionQ}] :=
 (*mmaCellProcessor*)
 
 
-Options[mmaCellProcessor] = {"BoxRules" -> {}, "Indentation" -> "  "}
+Options[mmaCellProcessor] =
+	{"BoxRules" -> {}, "StringRules" -> {}, "Indentation" -> "  "}
 
 
 functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
-	Module[{boxes, boxRules, style, texOptions, indentation, texCode},
-		{boxes, style, texOptions, boxRules, indentation} =
+	Module[
+		{
+			boxes, boxRules, style, texOptions, stringRules, indentation,
+			texCode
+		},
+		{boxes, style, texOptions, boxRules, stringRules, indentation} =
 			processorDataLookup[functionCall,
 				{data, Options[mmaCellProcessor]},
-				{"Boxes", "Style", "TeXOptions", "BoxRules", "Indentation"}
+				{
+					"Boxes", "Style", "TeXOptions",
+					"BoxRules", "StringRules", "Indentation"
+				}
 			];
 		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
 		boxes = Replace[boxes, BoxData[b_] :> b];
 		
-		AppendTo[
+		boxRules = Join[
 			boxRules,
+			If[stringRules === {},
+				{}
+			(* else *),
+				With[{stringRules = stringRules},
+					{
+						str_String :>
+							StringReplace[makeStringDefault[str], stringRules]
+					}
+				]
+			],
 			With[{supportedBoxes = boxRules[[All, 1]]},
-				unsupportedBox:Except[$basicBoxes] :>
-					throwException[functionCall, {"Unsupported", "Box"},
-						{unsupportedBox, supportedBoxes}
-					]
+				{
+					unsupportedBox:Except[$basicBoxes] :>
+						throwException[functionCall, {"Unsupported", "Box"},
+							{unsupportedBox, supportedBoxes}
+						]
+				}
 			]
 		];
 		texCode =
@@ -2271,7 +2298,15 @@ functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 			optionsToTeX["[", texOptions, "]"],
 			"{", style, "}",
 			StringReplace[
-				StringJoin["\n", texCode],
+				StringReplace[
+					StringJoin["\n", texCode],
+					StringExpression[
+						$commandCharsToTeX[[1, 1]] <> ")",
+						ws:$whitespace,
+						$commandCharsToTeX[[1, 1]] <> "("
+					] :>
+						ws
+				],
 				"\n" | "\[IndentingNewLine]" -> "\n" <> indentation
 			]
 			,
