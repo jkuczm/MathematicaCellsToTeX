@@ -1689,13 +1689,14 @@ $boxesToFormattedTeX =
 		#1["\[Integral]", scr_, OptionsPattern[]] :>
 			With[
 				{
+					escChar = $commandCharsToTeX[[1, 1]],
 					argStart = $commandCharsToTeX[[2, 1]],
 					argEnd = $commandCharsToTeX[[3, 1]]
 				}
 				,
 				StringJoin[
-					$commandCharsToTeX[[1, 1]], #2,
-					argStart, "\\int", argEnd,
+					escChar, #2,
+					argStart, escChar, "int", argEnd,
 					argStart, makeString[scr], argEnd
 				]
 			]
@@ -1708,13 +1709,14 @@ AppendTo[$boxesToFormattedTeX,
 	SubsuperscriptBox["\[Integral]", sub_, sup_, OptionsPattern[]] :>
 		With[
 			{
+				escChar = $commandCharsToTeX[[1, 1]],
 				argStart = $commandCharsToTeX[[2, 1]],
 				argEnd = $commandCharsToTeX[[3, 1]]
 			}
 			,
 			StringJoin[
-				$commandCharsToTeX[[1, 1]], "mmaSubSupM",
-				argStart, "\\int", argEnd,
+				escChar, "mmaSubSupM",
+				argStart, escChar, "int", argEnd,
 				argStart, makeString[sub], argEnd,
 				argStart, makeString[sup], argEnd
 			]

@@ -11,8 +11,10 @@ BeginPackage[
 
 Get["CellsToTeX`"]
 
+PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
 
-With[{boxRules = CellsToTeX`Configuration`getBoxesToFormattedTeX[]},
+
+With[{boxRules = getBoxesToFormattedTeX[]},
 	tmpBoxesToString =
 		CellsToTeX`Internal`boxesToString[
 			#, boxRules, FormatType -> InputForm
@@ -107,12 +109,14 @@ Test[
 	,
 	TestID -> "SubscriptBox: with option"
 ]
-Test[
-	SubscriptBox["\[Integral]", "a"] // tmpBoxesToString
-	,
-	"\\mmaSubM{\\int}{a}"
-	,
-	TestID -> "SubscriptBox: \\[Integral]"
+Block[{$commandCharsToTeX = {"!" -> "test1", "(" -> "test2", ")" -> "test3"}},
+	Test[
+		SubscriptBox["\[Integral]", "a"] // tmpBoxesToString
+		,
+		"!mmaSubM(!int)(a)"
+		,
+		TestID -> "SubscriptBox: \\[Integral]: command chars"
+	]
 ]
 
 Test[
