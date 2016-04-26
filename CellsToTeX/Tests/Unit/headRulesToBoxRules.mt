@@ -9,10 +9,7 @@ BeginPackage["CellsToTeX`Tests`Unit`headRulesToBoxRules`", {"MUnit`"}]
 
 Get["CellsToTeX`"]
 
-Get["CellsToTeX`Tests`Utilities`"]
-
-$ContextPath =
-	Join[{"CellsToTeX`Configuration`", "CellsToTeX`Internal`"}, $ContextPath]
+PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
 
 
 (* ::Section:: *)
@@ -58,17 +55,15 @@ Block[{$commandCharsToTeX = {"|" -> "x", "(" -> "y", ")" -> "z"}},
 
 
 (* ::Subsection:: *)
-(*Incorrect arguments*)
+(*Protected attribute*)
 
 
-Module[{testArg1, testArg2},
-	Test[
-		Catch[headRulesToBoxRules[testArg1, testArg2];, _, HoldComplete]
-		,
-		expectedIncorrectArgsError[headRulesToBoxRules[testArg1, testArg2]]
-		,
-		TestID -> "Incorrect arguments"
-	]
+Test[
+	MemberQ[Attributes[headRulesToBoxRules], Protected]
+	,
+	True
+	,
+	TestID -> "Protected attribute"
 ]
 
 

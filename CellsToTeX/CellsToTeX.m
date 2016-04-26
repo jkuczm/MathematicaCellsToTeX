@@ -124,6 +124,17 @@ extracting styles needed for conversion of some boxes."
 (*Utilities*)
 
 
+headRulesToBoxRules::usage =
+"\
+headRulesToBoxRules[head -> {\"name\", argsNo}] \
+returns delayed rule that transforms box expression, with given head, to TeX \
+formatting command with given name. Box can contain argsNo arguments and \
+options.\
+
+headRulesToBoxRules[{rule1, rule2, ...}] \
+returns List of transformed rules."
+
+
 defaultAnnotationType::usage =
 "\
 defaultAnnotationType[sym] or defaultAnnotationType[\"name\"] \
@@ -432,17 +443,6 @@ boxRules.\
 
 If value of FormatType option is different than InputForm and OutputForm \
 CellsToTeXException[\"Unsupported\", \"FormatType\"] is thrown."
-
-
-headRulesToBoxRules::usage =
-"\
-headRulesToBoxRules[head -> {\"name\", argsNo}] \
-returns delayed rule that transforms box expression, with given head, to TeX \
-formatting command with given name. Box can contain argsNo arguments and \
-options.\
-
-headRulesToBoxRules[{rule1, rule2, ...}] \
-returns List of transformed rules."
 
 
 defaultOrFirst::usage =
@@ -1252,28 +1252,6 @@ functionCall:boxesToString[
 
 
 (* ::Subsubsection:: *)
-(*headRulesToBoxRules*)
-
-
-SetAttributes[headRulesToBoxRules, Listable]
-
-
-headRulesToBoxRules[
-	boxHead_ -> {texCommandName_String, argsNo_Integer?NonNegative}
-] :=
-	With[
-		{
-			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
-			argStart = $commandCharsToTeX[[2, 1]],
-			argEnd = $commandCharsToTeX[[3, 1]]
-		}
-		,
-		HoldPattern @ boxHead[boxes:Repeated[_, {argsNo}], OptionsPattern[]] :>
-			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
-	]
-
-
-(* ::Subsubsection:: *)
 (*defaultOrFirst*)
 
 
@@ -1835,6 +1813,28 @@ makeStringDefault["\[IndentingNewLine]"] := "\n"
 makeStringDefault[boxes_List] := StringJoin[makeString /@ boxes]
 
 makeStringDefault[BoxData[boxes_]] := makeString[boxes]
+
+
+(* ::Subsubsection:: *)
+(*headRulesToBoxRules*)
+
+
+SetAttributes[headRulesToBoxRules, Listable]
+
+
+headRulesToBoxRules[
+	boxHead_ -> {texCommandName_String, argsNo_Integer?NonNegative}
+] :=
+	With[
+		{
+			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
+			argStart = $commandCharsToTeX[[2, 1]],
+			argEnd = $commandCharsToTeX[[3, 1]]
+		}
+		,
+		HoldPattern @ boxHead[boxes:Repeated[_, {argsNo}], OptionsPattern[]] :>
+			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
+	]
 
 
 (* ::Subsubsection:: *)
