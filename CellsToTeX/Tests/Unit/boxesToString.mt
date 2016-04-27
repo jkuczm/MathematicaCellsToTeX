@@ -203,7 +203,7 @@ Test[
 	,
 	"\\sb{a}{b}"
 	,
-	TestID -> "OutputForm: BoxRules option: formatting box"
+	TestID -> "OutputForm: BoxRules: formatting box"
 ]
 
 Test[
@@ -214,8 +214,7 @@ Test[
 	,
 	"\\sb{a}{b}"
 	,
-	TestID ->
-		"OutputForm: BoxRules option: nested formatting box embedded in String"
+	TestID -> "OutputForm: BoxRules: nested formatting box embedded in String"
 ]
 
 Test[
@@ -226,7 +225,7 @@ Test[
 	,
 	"d\\sb{a}{b}c"
 	,
-	TestID -> "OutputForm: BoxRules option: formatting box in RowBox"
+	TestID -> "OutputForm: BoxRules: formatting box in RowBox"
 ]
 
 Test[
@@ -234,7 +233,7 @@ Test[
 	,
 	"d\\sb{a}{b}c"
 	,
-	TestID -> "OutputForm: BoxRules option: formatting box embedded in String"
+	TestID -> "OutputForm: BoxRules: formatting box embedded in String"
 ]
 
 
@@ -255,13 +254,49 @@ Test[
 ]
 
 Test[
+	tmpBoxesToString["\[PlusMinus]", {}, CharacterEncoding -> "Unicode"]
+	,
+	"\[PlusMinus]"
+	,
+	TestID -> "OutputForm: Unicode: \\[PlusMinus]"
+]
+Test[
 	tmpBoxesToString["\[PlusMinus]", {}, CharacterEncoding -> "ASCII"]
 	,
 	"+-"
 	,
 	TestID -> "OutputForm: ASCII: \\[PlusMinus]"
 ]
+Test[
+	tmpBoxesToString[
+		"\[PlusMinus]",
+		{"\[PlusMinus]" -> "\\(\\pm\\)"},
+		CharacterEncoding -> "Unicode"
+	]
+	,
+	"\\(\\pm\\)"
+	,
+	TestID -> "OutputForm: BoxRules: Unicode: \\[PlusMinus]"
+]
+Test[
+	tmpBoxesToString[
+		"\[PlusMinus]",
+		{"\[PlusMinus]" -> "\\(\\pm\\)"},
+		CharacterEncoding -> "ASCII"
+	]
+	,
+	"\\(\\pm\\)"
+	,
+	TestID -> "OutputForm: BoxRules: ASCII: \\[PlusMinus]"
+]
 
+Test[
+	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "Unicode"]
+	,
+	"\[PlusMinus]"
+	,
+	TestID -> "OutputForm: Unicode: \"\\[PlusMinus]\""
+]
 Test[
 	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "ASCII"]
 	,
@@ -444,7 +479,7 @@ Test[
 	,
 	"\\sb{a}{\"b\"}"
 	,
-	TestID -> "InputForm: BoxRules option: formatting box"
+	TestID -> "InputForm: BoxRules: formatting box"
 ]
 
 Test[
@@ -455,7 +490,7 @@ Test[
 	,
 	"\"d\"\\sb{a}{\"b\"}c"
 	,
-	TestID -> "InputForm: BoxRules option: formatting box in RowBox"
+	TestID -> "InputForm: BoxRules: formatting box in RowBox"
 ]
 
 Test[
@@ -463,7 +498,7 @@ Test[
 	,
 	"d\\sb{a}{b}c"
 	,
-	TestID -> "InputForm: BoxRules option: formatting box embedded in String"
+	TestID -> "InputForm: BoxRules: formatting box embedded in String"
 ]
 
 Test[
@@ -483,13 +518,49 @@ Test[
 ]
 
 Test[
+	tmpBoxesToString["\[PlusMinus]", {}, CharacterEncoding -> "Unicode"]
+	,
+	"\[PlusMinus]"
+	,
+	TestID -> "InputForm: Unicode: \\[PlusMinus]"
+]
+Test[
 	tmpBoxesToString["\[PlusMinus]", {}, CharacterEncoding -> "ASCII"]
 	,
 	"\\[PlusMinus]"
 	,
 	TestID -> "InputForm: ASCII: \\[PlusMinus]"
 ]
+Test[
+	tmpBoxesToString[
+		"\[PlusMinus]",
+		{"\[PlusMinus]" -> "\\(\\pm\\)"},
+		CharacterEncoding -> "Unicode"
+	]
+	,
+	"\\(\\pm\\)"
+	,
+	TestID -> "InputForm: BoxRules: Unicode: \\[PlusMinus]"
+]
+Test[
+	tmpBoxesToString[
+		"\[PlusMinus]",
+		{"\[PlusMinus]" -> "\\(\\pm\\)"},
+		CharacterEncoding -> "ASCII"
+	]
+	,
+	"\\(\\pm\\)"
+	,
+	TestID -> "InputForm: BoxRules: ASCII: \\[PlusMinus]"
+]
 
+Test[
+	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "Unicode"]
+	,
+	"\"\[PlusMinus]\""
+	,
+	TestID -> "InputForm: Unicode: \"\\[PlusMinus]\""
+]
 Test[
 	tmpBoxesToString["\"\[PlusMinus]\"", {}, CharacterEncoding -> "ASCII"]
 	,
