@@ -2216,26 +2216,42 @@ functionCall:messageLinkProcessor[data:{___?OptionQ}] :=
 (*mmaCellProcessor*)
 
 
-Options[mmaCellProcessor] =
-	{"BoxRules" -> {}, "StringRules" -> {}, "Indentation" -> "  "}
+Options[mmaCellProcessor] = {
+	"BoxRules" -> {},
+	"StringRules" -> {},
+	"NonASCIIHandler" -> Identity,
+	"Indentation" -> "  "
+}
 
 
 functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 	Module[
 		{
-			boxes, boxRules, style, texOptions, stringRules, indentation,
-			texCode
+			boxes, boxRules, style, texOptions, stringRules, nonASCIIHandler,
+			indentation, texCode
 		},
-		{boxes, style, texOptions, boxRules, stringRules, indentation} =
+		{
+			boxes, style, texOptions, boxRules, stringRules, nonASCIIHandler,
+			indentation
+		} =
 			processorDataLookup[functionCall,
 				{data, Options[mmaCellProcessor]},
 				{
 					"Boxes", "Style", "TeXOptions",
-					"BoxRules", "StringRules", "Indentation"
+					"BoxRules", "StringRules", "NonASCIIHandler", "Indentation"
 				}
 			];
 		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
 		boxes = Replace[boxes, BoxData[b_] :> b];
+		
+		If[nonASCIIHandler =!= Identity,
+			With[{nonASCIIHandler = nonASCIIHandler},
+				AppendTo[stringRules,
+					char:RegularExpression["[^[:ascii:]]"] :>
+						nonASCIIHandler[char]
+				]
+			]
+		];
 		
 		boxRules = Join[
 			boxRules,

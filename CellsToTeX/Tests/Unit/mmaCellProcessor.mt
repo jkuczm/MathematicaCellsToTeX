@@ -22,7 +22,7 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 			{
 				processorDataLookup, $processorDataLookupLog = {},
 				testLookedupTeXOption, testLookedupBoxRuleLHS,
-				testLookedupBoxRuleRHS
+				testLookedupBoxRuleRHS, testLookedupNonASCIIHandler
 				,
 				CellsToTeX`Internal`optionsToTeX, $optionsToTeXLog = {}
 				,
@@ -32,13 +32,15 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 				,
 				$commandCharsToTeX = $commandCharsToTeX
 				,
-				testDefaultBoxRuleLHS, testDefaultBoxRuleRHS
+				testDefaultBoxRuleLHS, testDefaultBoxRuleRHS,
+				testDefaultNonASCIIHandler
 				,
 				testData, testExtendedBoxRules,
 				testBoxes, testStyle, testBox, testTeXOptions,
-				testConvertedBox, testIndentation, testFormatTypeValue,
-				testCharacterEncodingValue, testPageHeightValue,
-				testUnusedOptionName, testUnusedOptionValue
+				testConvertedBox, testNonASCIIHandler, testIndentation,
+				testFormatTypeValue, testCharacterEncodingValue,
+				testPageHeightValue, testUnusedOptionName,
+				testUnusedOptionValue
 			}
 			,
 			SetAttributes[processorDataLookup, HoldFirst];
@@ -51,6 +53,7 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 					{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
 					{"testLookedupStringRuleLHS" ->
 						"testLookedupStringRuleRHS"},
+					testLookedupNonASCIIHandler,
 					"testLookedupIndentation"
 				}
 			];
@@ -74,6 +77,7 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 				"BoxRules" -> {testDefaultBoxRuleLHS -> testDefaultBoxRuleRHS},
 				"StringRules" ->
 					{"testDefaultStringRuleLHS" -> "testDefaultStringRuleRHS"},
+				"NonASCIIHandler" -> testDefaultNonASCIIHandler,
 				"Indentation" -> "testDefaultIndentation"
 			];
 			testData = {
@@ -81,6 +85,7 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 				"Style" -> testStyle,
 				"BoxRules" -> {testBox -> testConvertedBox},
 				"StringRules" -> {"testString" -> "testConvertedString"},
+				"NonASCIIHandler" -> testNonASCIIHandler,
 				"TeXOptions" -> testTeXOptions,
 				"Indentation" -> testIndentation,
 				"FormatType" -> testFormatTypeValue,
@@ -91,21 +96,26 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 			testExtendedBoxRules = {
 				testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS,
 				HoldPattern[
-					Verbatim[Pattern][pattName1_, Verbatim[Blank][String]] :>
-						StringReplace[makeStringDefault[pattName1_], {
+					Verbatim[Pattern][strPattName_, Verbatim[Blank][String]] :>
+						StringReplace[makeStringDefault[strPattName_], {
 							"testLookedupStringRuleLHS" ->
 								"testLookedupStringRuleRHS"
+							,
+							Verbatim[Pattern][charPattName_,
+								RegularExpression["[^[:ascii:]]"]
+							] :>
+								testLookedupNonASCIIHandler[charPattName_]
 						}]
 				],
 				With[{testData = testData},
 					HoldPattern[
 						Verbatim[Pattern][
-							pattName2_, Verbatim[Except][testBasicBoxes]
+							unsupBoxPattName_, Verbatim[Except][testBasicBoxes]
 						] :>
 							CellsToTeX`Internal`throwException[
 								mmaCellProcessor[testData],
 								{"Unsupported", "Box"},
-								{pattName2_, {testLookedupBoxRuleLHS}}
+								{unsupBoxPattName_, {testLookedupBoxRuleLHS}}
 							]
 					]
 				]
@@ -156,12 +166,13 @@ testLookedupIndentationtestBoxesToStringResult1
 						"StringRules" ->
 							{"testDefaultStringRuleLHS" ->
 								"testDefaultStringRuleRHS"},
+						"NonASCIIHandler" -> testDefaultNonASCIIHandler,
 						"Indentation" -> "testDefaultIndentation"
 					}
 				},
 				{
 					"Boxes", "Style", "TeXOptions", "BoxRules", "StringRules",
-					"Indentation"
+					"NonASCIIHandler", "Indentation"
 				}
 			]}
 		]
@@ -349,6 +360,7 @@ moduleWithMockedFunctions[
 			{testLookedupTeXOption},
 			{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
 			{} (* Empty StringRules. *),
+			testLookedupNonASCIIHandler,
 			"testLookedupIndentation"
 		}
 	];
@@ -362,12 +374,85 @@ moduleWithMockedFunctions[
 testLookedupIndentationtestBoxesToStringResult1
 \\end{mmaCell}"
 			,
-			(* For empty StringRules no string related box rule is created. *)
-			"BoxRules" -> Delete[testExtendedBoxRules, 2],
+			(*	For empty StringRules and non-Identity NonASCIIHandler only
+				autimatic non-ASCII string rule is created. *)
+			"BoxRules" -> Delete[testExtendedBoxRules, {2, 1, 2, 2, 1}],
 			testData
 		}
 		,
 		TestID -> "empty StringRules: returned value"
+	]
+]
+moduleWithMockedFunctions[
+	{testLookedupBoxes}
+	,
+	testLookedupBoxes
+	,
+	mockFunction[
+		processorDataLookup,
+		$processorDataLookupLog,
+		{
+			lookedupBoxes, "testLookedupStyle",
+			{testLookedupTeXOption},
+			{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
+			{"testLookedupStringRuleLHS" -> "testLookedupStringRuleRHS"},
+			Identity (* Identity NonASCIIHandler. *),
+			"testLookedupIndentation"
+		}
+	];
+	
+	TestMatch[
+		mmaCellProcessor[testData]
+		,
+		{
+			"TeXCode" -> "\
+\\begin{mmaCell}[testOptionsToTeXResult1]{testLookedupStyle}
+testLookedupIndentationtestBoxesToStringResult1
+\\end{mmaCell}"
+			,
+			(*	For Identity NonASCIIHandler no autimatic non-ASCII string rule
+				is created. *)
+			"BoxRules" -> Delete[testExtendedBoxRules, {2, 1, 2, 2, 2}],
+			testData
+		}
+		,
+		TestID -> "Identity NonASCIIHandler: returned value"
+	]
+]
+moduleWithMockedFunctions[
+	{testLookedupBoxes}
+	,
+	testLookedupBoxes
+	,
+	mockFunction[
+		processorDataLookup,
+		$processorDataLookupLog,
+		{
+			lookedupBoxes, "testLookedupStyle",
+			{testLookedupTeXOption},
+			{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
+			{} (* Empty StringRules. *),
+			Identity (* Identity NonASCIIHandler. *),
+			"testLookedupIndentation"
+		}
+	];
+	
+	TestMatch[
+		mmaCellProcessor[testData]
+		,
+		{
+			"TeXCode" -> "\
+\\begin{mmaCell}[testOptionsToTeXResult1]{testLookedupStyle}
+testLookedupIndentationtestBoxesToStringResult1
+\\end{mmaCell}"
+			,
+			(*	For empty StringRules and Identity NonASCIIHandler no string
+				related box rule is created. *)
+			"BoxRules" -> Delete[testExtendedBoxRules, 2],
+			testData
+		}
+		,
+		TestID -> "empty StringRules, Identity NonASCIIHandler: returned value"
 	]
 ]
 
