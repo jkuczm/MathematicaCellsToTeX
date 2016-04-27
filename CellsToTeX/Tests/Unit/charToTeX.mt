@@ -16,23 +16,95 @@ PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
 (*Tests*)
 
 
+Block[{$commandCharsToTeX = {"@" -> "test1", "#" -> "test2", "$" -> "test3"}},
+	Test[
+		charToTeX["\[PlusMinus]", FontWeight -> Plain]
+		,
+		"@(@pm@)"
+		,
+		TestID -> "\[PlusMinus]: Plain"
+	]
+]
 Block[{$commandCharsToTeX = {"?" -> "test1", "[" -> "test2", "]" -> "test3"}},
 	Test[
-		charToTeX["\[PlusMinus]"]
+		charToTeX["\[PlusMinus]", FontWeight -> Bold]
 		,
-		"?(?pm?)"
+		"?(?pmb[?pm]?)"
 		,
-		TestID -> "\[PlusMinus]"
+		TestID -> "\[PlusMinus]: Bold"
 	]
 ]
 
 
 Test[
-	charToTeX["\[Equal]"]
+	charToTeX["\[Equal]", FontWeight -> Plain]
 	,
 	"=="
 	,
-	TestID -> "\[Equal]"
+	TestID -> "\[Equal]: Plain"
+]
+Test[
+	charToTeX["\[Equal]", FontWeight -> Bold]
+	,
+	"=="
+	,
+	TestID -> "\[Equal]: Bold"
+]
+
+
+Test[
+	charToTeX["a", FontWeight -> Plain]
+	,
+	"a"
+	,
+	TestID -> "letter: Plain"
+]
+Test[
+	charToTeX["a", FontWeight -> Bold]
+	,
+	"a"
+	,
+	TestID -> "letter: Bold"
+]
+
+
+(* ::Subsection:: *)
+(*Exceptions*)
+
+
+Module[{unsupportedFontWeight},
+	Test[
+		Catch[
+			charToTeX["a", FontWeight -> unsupportedFontWeight];
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[
+				CellsToTeXException["Unsupported", "OptionValue", FontWeight],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::unsupported,
+					"MessageParameters" -> {
+						HoldForm @ charToTeX[
+							"a", FontWeight -> unsupportedFontWeight
+						],
+						HoldForm @ CellsToTeXException[
+							"Unsupported", "OptionValue", FontWeight
+						],
+						HoldForm @ "OptionValue",
+						HoldForm @ unsupportedFontWeight,
+						HoldForm @ {Plain, Bold}
+					}
+				]
+			],
+			CellsToTeXException["Unsupported", "OptionValue", FontWeight]
+		}
+		,
+		TestID -> "Exception: Unsupported OptionValue FontWeight"
+	]
 ]
 
 

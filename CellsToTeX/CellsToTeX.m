@@ -1742,10 +1742,9 @@ $boxHeadsToTeXCommands = {
 
 
 $stringsToTeX = {
-	"\[RightSkeleton]" -> ">>"
-	,
-	char_ /; First@ToCharacterCode[char] > 126 :>
-		charToTeX[char]
+	"\[LeftSkeleton]" -> "<<",
+	"\[RightSkeleton]" -> ">>",
+	char:RegularExpression["[^[:ascii:]]"] :> charToTeX[char]
 }
 
 If[$VersionNumber >=10,
@@ -1853,27 +1852,49 @@ defaultAnnotationType[_Symbol | _String] := "UndefinedSymbol"
 (*charToTeX*)
 
 
-charToTeX[char_] :=
-	StringReplace[
-		StringJoin @ Replace[
-			System`Convert`TeXFormDump`TextExceptions @
-				System`Convert`TeXFormDump`TeXCharacters[char]
-			,
-			{"$", texStr_, "$"} :>
-				If[StringFreeQ[texStr, "\\"],
-					texStr
-				(* else *),
-					{"\\(", texStr, "\\)"}
-				]
-		]
+Options[charToTeX] = {FontWeight -> Plain}
+
+
+functionCall:charToTeX[char_, OptionsPattern[]] :=
+	With[
+		{
+			styleWrapper =
+				Replace[OptionValue[FontWeight], {
+					Plain -> Identity,
+					Bold -> ({"\\pmb{", # , "}"} &),
+					_ :>
+						throwException[functionCall,
+							{"Unsupported", "OptionValue", FontWeight},
+							{OptionValue[FontWeight], {Plain, Bold}}
+						]
+				}]
+		}
 		,
-		With[{escChar = $commandCharsToTeX[[1, 1]]},
-			{
-				" " -> "",
-				"\\{" -> escChar <> "{", "{" -> $commandCharsToTeX[[2, 1]],
-				"\\}" -> escChar <> "}", "}" -> $commandCharsToTeX[[3, 1]],
-				"\\\\" -> "\\\\", "\\" -> escChar
-			}
+		StringReplace[
+			StringJoin @ Replace[
+				System`Convert`TeXFormDump`TextExceptions @
+					System`Convert`TeXFormDump`TeXCharacters[char]
+				,
+				{
+					{"$", texStr_, "$"} :>
+						If[StringFreeQ[texStr, "\\"],
+							texStr
+						(* else *),
+							{"\\(", styleWrapper[texStr], "\\)"}
+						],
+					texStr_String /; !StringFreeQ[texStr, "\\"] :>
+						styleWrapper[texStr]
+				}
+			]
+			,
+			With[{escChar = $commandCharsToTeX[[1, 1]]},
+				{
+					" " -> "",
+					"\\{" -> escChar <> "{", "{" -> $commandCharsToTeX[[2, 1]],
+					"\\}" -> escChar <> "}", "}" -> $commandCharsToTeX[[3, 1]],
+					"\\\\" -> "\\\\", "\\" -> escChar
+				}
+			]
 		]
 	]
 
