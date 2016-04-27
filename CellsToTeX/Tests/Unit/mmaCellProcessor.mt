@@ -466,7 +466,8 @@ moduleWithMockedFunctions[
 	mockFunction[
 		CellsToTeX`Internal`boxesToString,
 		$boxesToStringLog,
-		"$($alpha$) \t$($beta$)\[IndentingNewLine] $($gamma$)\\(a\\)\\(b\\)"
+		"$($alpha$)$($beta$) $($gamma$)\t$($delta$) \t\t  \t$($epsilon$)
+$($zeta$)\[IndentingNewLine]$($eta$)\\(a\\)\\(b\\)"
 	];
 	
 	TestMatch[
@@ -475,8 +476,9 @@ moduleWithMockedFunctions[
 		{
 			"TeXCode" -> "\
 \\begin{mmaCell}[testOptionsToTeXResult1]{testLookedupStyle}
-testLookedupIndentation$($alpha \t$beta
-testLookedupIndentation $gamma$)\\(a\\)\\(b\\)
+testLookedupIndentation$($alpha$beta $gamma\t$delta \t\t  \t$epsilon$)
+testLookedupIndentation$($zeta$)
+testLookedupIndentation$($eta$)\\(a\\)\\(b\\)
 \\end{mmaCell}"
 			,
 			(* For empty StringRules no string related box rule is created. *)

@@ -2294,7 +2294,7 @@ functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 					StringJoin["\n", texCode],
 					StringExpression[
 						$commandCharsToTeX[[1, 1]] <> ")",
-						ws:$whitespace,
+						ws:(" " | "\t")...,
 						$commandCharsToTeX[[1, 1]] <> "("
 					] :>
 						ws
