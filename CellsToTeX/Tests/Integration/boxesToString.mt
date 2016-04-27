@@ -23,7 +23,12 @@ With[
 				headRulesToBoxRules[$boxHeadsToTeXCommands],
 				{str_String :>
 					StringReplace[makeStringDefault[str],
-						Join[$stringsToTeX, $commandCharsToTeX]
+						Join[
+							$stringsToTeX,
+							$commandCharsToTeX,
+							{char:RegularExpression["[^[:ascii:]]"] :>
+								charToTeX[char, FontWeight -> Plain]}
+						]
 					]}
 			]
 	}

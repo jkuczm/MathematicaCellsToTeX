@@ -1632,6 +1632,10 @@ $cellStyleOptions = {
 	{"Code", "StringRules"} -> {},
 	{"Input" | "Output" | "Print" | "Message", "StringRules"} :>
 		Join[$stringsToTeX, $commandCharsToTeX],
+	{"Code", "NonASCIIHandler"} -> Identity,
+	{"Input", "NonASCIIHandler"} -> (charToTeX[#, FontWeight -> Bold]&),
+	{"Output" | "Print" | "Message", "NonASCIIHandler"} ->
+		(charToTeX[#, FontWeight -> Plain]&),
 	{"Code", "CharacterEncoding"} -> "ASCII",
 	{"Input" | "Output" | "Print" | "Message", "CharacterEncoding"} ->
 		"Unicode",
@@ -1743,8 +1747,7 @@ $boxHeadsToTeXCommands = {
 
 $stringsToTeX = {
 	"\[LeftSkeleton]" -> "<<",
-	"\[RightSkeleton]" -> ">>",
-	char:RegularExpression["[^[:ascii:]]"] :> charToTeX[char]
+	"\[RightSkeleton]" -> ">>"
 }
 
 If[$VersionNumber >=10,

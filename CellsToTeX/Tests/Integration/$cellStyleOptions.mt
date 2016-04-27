@@ -32,6 +32,7 @@ Test[
 			],
 		"BoxRules" :> $linearBoxesToTeX,
 		"StringRules" -> {},
+		"NonASCIIHandler" -> Identity,
 		"CharacterEncoding" -> "ASCII",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -59,6 +60,7 @@ Test[
 				headRulesToBoxRules[$boxHeadsToTeXCommands]
 			],
 		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
+		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Bold]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -85,6 +87,7 @@ Test[
 				headRulesToBoxRules[$boxHeadsToTeXCommands]
 			],
 		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
+		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> True,
@@ -111,6 +114,7 @@ Test[
 				headRulesToBoxRules[$boxHeadsToTeXCommands]
 			],
 		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
+		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> False,
@@ -139,6 +143,7 @@ Test[
 				headRulesToBoxRules[$boxHeadsToTeXCommands]
 			],
 		"StringRules" :> Join[$stringsToTeX, $commandCharsToTeX],
+		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
 		"Indexed" -> False,
