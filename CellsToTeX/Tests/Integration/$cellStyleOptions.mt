@@ -26,9 +26,10 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				annotateSyntaxProcessor, toInputFormProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, annotateSyntaxProcessor,
+				toInputFormProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :> $linearBoxesToTeX,
 		"StringRules" -> {},
@@ -49,8 +50,8 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				annotateSyntaxProcessor, cellLabelProcessor,
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, annotateSyntaxProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
@@ -77,8 +78,9 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
 			Join[
@@ -104,8 +106,9 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
 			Join[
@@ -132,8 +135,8 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				messageLinkProcessor, cellLabelProcessor,
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, messageLinkProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
