@@ -525,6 +525,22 @@ optionsToTeX[pre, {key1 -> val1, key2 :> val2, ...}, post] \
 wraps result with pre and post, if result is not empty."
 
 
+mergeAdjacentTeXDelims::usage =
+"\
+mergeAdjacentTeXDelims[startDelim, endDelim][texCode] \
+returns String with given texCode in which code fragments, delimited by \
+startDelim and endDelim, separated only by tabs or spaces, are merged \
+together."
+
+
+mergeAdjacentTeXCommands::usage =
+"\
+mergeAdjacentTeXCommands[cmd, argStart, argEnd][texCode] \
+returns String with given texCode in which occurences of commands cmd with \
+single arguments, separated only by tabs or spaces, are merged into one \
+command."
+
+
 templateBoxDisplayBoxes::usage =
 "\
 templateBoxDisplayBoxes[templateBox] \
@@ -1465,6 +1481,37 @@ optionsToTeX[
 	pre_String, keyval:{(Rule | RuleDelayed)[_String, _]...}, post_String
 ] :=
 	pre <> optionsToTeX[keyval] <> post
+
+
+(* ::Subsubsection:: *)
+(*mergeAdjacentTeXDelims*)
+
+
+mergeAdjacentTeXDelims[startDelim_String, endDelim_String, texCode_String] :=
+	StringReplace[texCode, {
+		c : Except[WordCharacter] ~~ endDelim <> startDelim :> c,
+		endDelim <> startDelim ~~ c : Except[WordCharacter] :> c,
+		endDelim ~~ ws : (" " | "\t") .. ~~ startDelim :> ws
+	}]
+
+
+(* ::Subsubsection:: *)
+(*mergeAdjacentTeXCommands*)
+
+
+mergeAdjacentTeXCommands[
+	cmd_String, argStart_String, argEnd_String, texCode_String
+] :=
+	StringReplace[texCode,
+		cmds : (
+			RegularExpression[
+				StringReplace[cmd, "\\" -> "\\\\"] <> "(?P<braces>" <>
+				argStart <> "(?:[^" <> argStart <> argEnd <>
+				"]|(?P>braces))*" <> argEnd <> ")"
+			] ~~ (" " | "\t") ...
+		) .. :>
+			mergeAdjacentTeXDelims[cmd <> argStart, argEnd, cmds]
+]
 
 
 (* ::Subsubsection:: *)

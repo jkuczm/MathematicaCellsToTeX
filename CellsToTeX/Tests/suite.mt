@@ -18,6 +18,8 @@ TestSuite[{
 	"Unit/labelToCellData.mt",
 	"Unit/optionValueToTeX.mt",
 	"Unit/optionsToTeX.mt",
+	"Unit/mergeAdjacentTeXDelims.mt",
+	"Unit/mergeAdjacentTeXCommands.mt",
 	"Unit/annotationRulesToBoxRules.mt",
 	"Unit/extractMessageLink.mt",
 	"Unit/prettifyPatterns.mt",
