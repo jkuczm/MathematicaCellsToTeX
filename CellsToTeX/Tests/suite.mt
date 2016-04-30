@@ -26,6 +26,8 @@ TestSuite[{
 	"Unit/cellLabelProcessor.mt",
 	"Unit/trackCellIndexProcessor.mt",
 	"Unit/messageLinkProcessor.mt",
+	"Unit/boxRulesProcessor.mt",
+	"Unit/boxesToTeXProcessor.mt",
 	"Unit/mmaCellProcessor.mt",
 	"Unit/exportProcessor.mt",
 	"Unit/CellsToTeXException.mt",
