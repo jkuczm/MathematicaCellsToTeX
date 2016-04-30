@@ -20,18 +20,21 @@ withMockedFunctions[body_] :=
 	Block[
 		{
 			processorDataLookup, $processorDataLookupLog = {},
-			testLookedupBoxes, testLookedupBoxRuleLHS, testLookedupBoxRuleRHS
+			testLookedupBoxes, testLookedupBoxRuleLHS, testLookedupBoxRuleRHS,
+			testLookedupTeXCodeSimplifier
 			,
 			CellsToTeX`Internal`boxesToString, $boxesToStringLog = {},
 			testBoxesToStringResult
 			,
-			$commandCharsToTeX = $commandCharsToTeX
+			$testTeXCodeSimplifierLog = {}, testTeXCodeSimplifierResult
 			,
-			testDefaultBoxRules
+			testDefaultOptions,
+			testDefaultBoxRules, testDefaultTeXCodeSimplifier
 			,
 			testData, testToStringOptions,
-			testBoxes, testBoxRules, testFormatType, testCharacterEncoding,
-			testPageHeight, testUnusedOptionName, testUnusedOptionValue
+			testBoxes, testBoxRules, testTeXCodeSimplifier, testFormatType,
+			testCharacterEncoding, testPageHeight, testUnusedOptionName,
+			testUnusedOptionValue
 			,
 			$basicBoxes, testBasicBoxes,
 			testExtendedBoxRules
@@ -43,18 +46,28 @@ withMockedFunctions[body_] :=
 			$processorDataLookupLog,
 			{
 				testLookedupBoxes,
-				{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS}
+				{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
+				testLookedupTeXCodeSimplifier
 			}
 		];
 		
-		testBoxesToStringResult = "testBoxesToStringResult";
 		mockFunction[
 			CellsToTeX`Internal`boxesToString,
 			$boxesToStringLog,
 			testBoxesToStringResult
 		];
 		
-		SetOptions[boxesToTeXProcessor, {"BoxRules" -> testDefaultBoxRules}];
+		mockFunction[
+			testLookedupTeXCodeSimplifier,
+			$testTeXCodeSimplifierLog,
+			testTeXCodeSimplifierResult
+		];
+		
+		testDefaultOptions = {
+			"BoxRules" -> testDefaultBoxRules,
+			"TeXCodeSimplifier" -> testDefaultTeXCodeSimplifier
+		};
+		SetOptions[boxesToTeXProcessor, testDefaultOptions];
 		
 		testToStringOptions = {
 			"FormatType" -> testFormatType,
@@ -66,6 +79,7 @@ withMockedFunctions[body_] :=
 				{
 					"Boxes" -> testBoxes,
 					"BoxRules" -> testBoxRules,
+					"TeXCodeSimplifier" -> testTeXCodeSimplifier,
 					testUnusedOptionName -> testUnusedOptionValue
 				},
 				testToStringOptions
@@ -101,18 +115,18 @@ withMockedFunctions[
 	Test[
 		boxesToTeXProcessor[testData]
 		,
-		{"TeXCode" -> testBoxesToStringResult, testData}
+		{"TeXCode" -> testTeXCodeSimplifierResult, testData}
 		,
 		TestID -> "basic: returned value"
 	];
 	Test[
 		$processorDataLookupLog
 		,
-		With[{testData = testData},
+		With[{testData = testData, testDefaultOptions = testDefaultOptions},
 			{HoldComplete[
 				boxesToTeXProcessor[testData],
-				{testData, {"BoxRules" -> testDefaultBoxRules}},
-				{"Boxes", "BoxRules"}
+				{testData, testDefaultOptions},
+				{"Boxes", "BoxRules", "TeXCodeSimplifier"}
 			]}
 		]
 		,
@@ -126,6 +140,13 @@ withMockedFunctions[
 		}}
 		,
 		TestID -> "basic: boxesToString"
+	];
+	TestMatch[
+		$testTeXCodeSimplifierLog
+		,
+		{HoldComplete[testBoxesToStringResult]}
+		,
+		TestID -> "basic: TeXCodeSimplifier"
 	]
 ]
 
@@ -136,7 +157,7 @@ withMockedFunctions@Module[{testBoxDataContents},
 	Test[
 		boxesToTeXProcessor[testData]
 		,
-		{"TeXCode" -> testBoxesToStringResult, testData}
+		{"TeXCode" -> testTeXCodeSimplifierResult, testData}
 		,
 		TestID -> "BoxData: returned value"
 	];
@@ -148,6 +169,13 @@ withMockedFunctions@Module[{testBoxDataContents},
 		}}
 		,
 		TestID -> "BoxData: boxesToString"
+	];
+	TestMatch[
+		$testTeXCodeSimplifierLog
+		,
+		{HoldComplete[testBoxesToStringResult]}
+		,
+		TestID -> "BoxData: TeXCodeSimplifier"
 	]
 ]
 
@@ -158,7 +186,7 @@ withMockedFunctions@Module[{testBoxDataContents, testCellstyle},
 	Test[
 		boxesToTeXProcessor[testData]
 		,
-		{"TeXCode" -> testBoxesToStringResult, testData}
+		{"TeXCode" -> testTeXCodeSimplifierResult, testData}
 		,
 		TestID -> "Cell: returned value"
 	];
@@ -170,28 +198,13 @@ withMockedFunctions@Module[{testBoxDataContents, testCellstyle},
 		}}
 		,
 		TestID -> "Cell: boxesToString"
-	]
-]
-
-
-withMockedFunctions[
-	$commandCharsToTeX = {"$" -> "test1", ":" -> "test2", ";" -> "test3"};
-	testBoxesToStringResult = "\
-$($alpha$)$($beta$) $($gamma$)\t$($delta$) \t\t  \t$($epsilon$)
-$($zeta$)\[IndentingNewLine]$($eta$)\\(a\\)\\(b\\)";
-	
-	Test[
-		boxesToTeXProcessor[testData]
+	];
+	TestMatch[
+		$testTeXCodeSimplifierLog
 		,
-		{
-			"TeXCode" ->"\
-$($alpha$beta $gamma\t$delta \t\t  \t$epsilon$)
-$($zeta$)\[IndentingNewLine]$($eta$)\\(a\\)\\(b\\)"
-			,
-			testData
-		}
+		{HoldComplete[testBoxesToStringResult]}
 		,
-		TestID -> "adjacent math modes: returned value"
+		TestID -> "Cell: TeXCodeSimplifier"
 	]
 ]
 

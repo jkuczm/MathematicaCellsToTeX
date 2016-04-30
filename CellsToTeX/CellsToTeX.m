@@ -2309,15 +2309,16 @@ functionCall:boxRulesProcessor[data:{___?OptionQ}] :=
 (*boxesToTeXProcessor*)
 
 
-Options[boxesToTeXProcessor] = {"BoxRules" -> {}}
+Options[boxesToTeXProcessor] =
+	{"BoxRules" -> {}, "TeXCodeSimplifier" -> Identity}
 
 
 functionCall:boxesToTeXProcessor[data:{___?OptionQ}] :=
-	Module[{boxes, boxRules, texCode},
-		{boxes, boxRules} =
+	Module[{boxes, boxRules, texCodeSimplifier, texCode},
+		{boxes, boxRules, texCodeSimplifier} =
 			processorDataLookup[functionCall,
 				{data, Options[boxesToTeXProcessor]},
-				{"Boxes", "BoxRules"}
+				{"Boxes", "BoxRules", "TeXCodeSimplifier"}
 			];
 		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
 		boxes = Replace[boxes, BoxData[b_] :> b];
@@ -2332,22 +2333,13 @@ functionCall:boxesToTeXProcessor[data:{___?OptionQ}] :=
 		];
 		
 		texCode =
-			rethrowException[functionCall,
-				"TagPattern" ->
-					CellsToTeXException["Unsupported", "FormatType"]
-			] @ boxesToString[
-				boxes, boxRules, FilterRules[data, Options[ToString]]
-			];
-		
-		texCode =
-			StringReplace[texCode,
-				StringExpression[
-					$commandCharsToTeX[[1, 1]] <> ")",
-					ws:(" " | "\t")...,
-					$commandCharsToTeX[[1, 1]] <> "("
-				] :>
-					ws
-			];
+			texCodeSimplifier @
+				rethrowException[functionCall,
+					"TagPattern" ->
+						CellsToTeXException["Unsupported", "FormatType"]
+				] @ boxesToString[
+					boxes, boxRules, FilterRules[data, Options[ToString]]
+				];
 		
 		{"TeXCode" -> texCode, data}
 	]
