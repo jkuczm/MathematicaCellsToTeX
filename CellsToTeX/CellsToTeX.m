@@ -275,23 +275,45 @@ If \"Boxes\" or \"TeXOptions\" key is not present \
 CellsToTeXException[\"Missing\", \"Keys\", \"ProcessorArgument\"] is thrown."
 
 
-mmaCellProcessor::usage =
+boxRulesProcessor::usage =
 "\
-mmaCellProcessor[{\
-\"Boxes\" -> boxes, \"Style\" -> style, \"TeXOptions\" -> texOptions, \
-\"BoxRules\" -> boxRules, \"Indentation\" -> indentation, ...\
+boxRulesProcessor[{\
+\"BoxRules\" -> boxRules, \"StringRules\" -> stringRules, \
+\"NonASCIIHandler\" -> nonASCIIHandler, ...\
 }] \
-returns List of given options with \"TeXCode\" option added. This option's \
-value is a String with TeX mmaCell environment with given style and \
-texOptions, containing representation of given boxes obtained by applying \
-given boxRules. Contents of mmaCell environment are indented using given \
-indentation.\
+returns List of given options with following modifications. If \
+nonASCIIHandler is not Identity, \"StringRules\" have appended rule \
+converting non-ASCII characters using nonASCIIHandler. If after modification \
+\"StringRules\" are not empty, \"BoxRules\" have appended rule replaceing \
+string using \"StringRules\"."
 
-If \"Boxes\", \"Style\" or \"TeXOptions\" key is not present \
+
+boxesToTeXProcessor::usage =
+"\
+boxesToTeXProcessor[{\"Boxes\" -> boxes, \"BoxRules\" -> boxRules,  ...}] \
+returns List of given options with \"TeXCode\" option added. This option's \
+value is a String with TeX representation of given boxes obtained by applying \
+given boxRules.\
+
+If \"Boxes\" key is not present \
 CellsToTeXException[\"Missing\", \"Keys\", \"ProcessorArgument\"] is thrown.\
 
 If boxes contain box not covered by boxRules, then \
 CellsToTeXException[\"Unsupported\", \"Box\"] is thrown."
+
+
+mmaCellProcessor::usage =
+"\
+mmaCellProcessor[{\
+\"TeXCode\" -> texCode, \"Style\" -> style, \"TeXOptions\" -> texOptions, \
+\"Indentation\" -> indentation, ...\
+}] \
+returns List of given options with \"TeXCode\" option modified. Its lines are \
+indented using given indentation and whole code is wrapped with TeX mmaCell \
+environment with given style and texOptions.\
+
+If \"TeXCode\", \"Style\" or \"TeXOptions\" key is not present \
+CellsToTeXException[\"Missing\", \"Keys\", \"ProcessorArgument\"] is thrown."
 
 
 exportProcessor::usage =
@@ -1583,24 +1605,26 @@ $supportedCellStyles = "Code" | "Input" | "Output" | "Print" | "Message"
 $cellStyleOptions = {
 	{"Code", "Processor"} ->
 		Composition[
-			trackCellIndexProcessor, mmaCellProcessor, annotateSyntaxProcessor,
-			toInputFormProcessor, cellLabelProcessor,
-			extractCellOptionsProcessor
+			trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+			boxRulesProcessor, annotateSyntaxProcessor, toInputFormProcessor,
+			cellLabelProcessor, extractCellOptionsProcessor
 		],
 	{"Input", "Processor"} ->
 		Composition[
-			trackCellIndexProcessor, mmaCellProcessor, annotateSyntaxProcessor,
-			cellLabelProcessor, extractCellOptionsProcessor
+			trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+			boxRulesProcessor, annotateSyntaxProcessor, cellLabelProcessor,
+			extractCellOptionsProcessor
 		],
 	{"Output" | "Print", "Processor"} ->
 		Composition[
-			trackCellIndexProcessor, mmaCellProcessor, cellLabelProcessor,
-			extractCellOptionsProcessor
+			trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+			boxRulesProcessor, cellLabelProcessor, extractCellOptionsProcessor
 		],
 	{"Message", "Processor"} ->
 		Composition[
-			trackCellIndexProcessor, mmaCellProcessor, messageLinkProcessor,
-			cellLabelProcessor, extractCellOptionsProcessor
+			trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+			boxRulesProcessor, messageLinkProcessor, cellLabelProcessor,
+			extractCellOptionsProcessor
 		],
 	{"Code", "BoxRules"} :> $linearBoxesToTeX,
 	{"Input" | "Output" | "Print" | "Message", "BoxRules"} :>
@@ -2196,36 +2220,21 @@ functionCall:messageLinkProcessor[data:{___?OptionQ}] :=
 
 
 (* ::Subsubsection:: *)
-(*mmaCellProcessor*)
+(*boxRulesProcessor*)
 
 
-Options[mmaCellProcessor] = {
-	"BoxRules" -> {},
-	"StringRules" -> {},
-	"NonASCIIHandler" -> Identity,
-	"Indentation" -> "  "
+Options[boxRulesProcessor] = {
+	"BoxRules" -> {}, "StringRules" -> {}, "NonASCIIHandler" -> Identity
 }
 
 
-functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
-	Module[
-		{
-			boxes, boxRules, style, texOptions, stringRules, nonASCIIHandler,
-			indentation, texCode
-		},
-		{
-			boxes, style, texOptions, boxRules, stringRules, nonASCIIHandler,
-			indentation
-		} =
+functionCall:boxRulesProcessor[data:{___?OptionQ}] :=
+	Module[{boxRules, stringRules, nonASCIIHandler},
+		{boxRules, stringRules, nonASCIIHandler} =
 			processorDataLookup[functionCall,
-				{data, Options[mmaCellProcessor]},
-				{
-					"Boxes", "Style", "TeXOptions",
-					"BoxRules", "StringRules", "NonASCIIHandler", "Indentation"
-				}
+				{data, Options[boxRulesProcessor]},
+				{"BoxRules", "StringRules", "NonASCIIHandler"}
 			];
-		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
-		boxes = Replace[boxes, BoxData[b_] :> b];
 		
 		If[nonASCIIHandler =!= Identity,
 			With[{nonASCIIHandler = nonASCIIHandler},
@@ -2236,27 +2245,45 @@ functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 			]
 		];
 		
-		boxRules = Join[
-			boxRules,
-			If[stringRules === {},
-				{}
-			(* else *),
-				With[{stringRules = stringRules},
-					{
-						str_String :>
-							StringReplace[makeStringDefault[str], stringRules]
-					}
+		If[stringRules =!= {},
+			With[{stringRules = stringRules},
+				AppendTo[boxRules,
+					str_String :>
+						StringReplace[makeStringDefault[str], stringRules]
 				]
-			],
-			With[{supportedBoxes = boxRules[[All, 1]]},
-				{
-					unsupportedBox:Except[$basicBoxes] :>
-						throwException[functionCall, {"Unsupported", "Box"},
-							{unsupportedBox, supportedBoxes}
-						]
-				}
 			]
 		];
+		
+		{"BoxRules" -> boxRules, "StringRules" -> stringRules, data}
+	]
+
+
+(* ::Subsubsection:: *)
+(*boxesToTeXProcessor*)
+
+
+Options[boxesToTeXProcessor] = {"BoxRules" -> {}}
+
+
+functionCall:boxesToTeXProcessor[data:{___?OptionQ}] :=
+	Module[{boxes, boxRules, texCode},
+		{boxes, boxRules} =
+			processorDataLookup[functionCall,
+				{data, Options[boxesToTeXProcessor]},
+				{"Boxes", "BoxRules"}
+			];
+		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
+		boxes = Replace[boxes, BoxData[b_] :> b];
+		
+		AppendTo[boxRules,
+			With[{supportedBoxes = boxRules[[All, 1]]},
+				unsupportedBox:Except[$basicBoxes] :>
+					throwException[functionCall, {"Unsupported", "Box"},
+						{unsupportedBox, supportedBoxes}
+					]
+			]
+		];
+		
 		texCode =
 			rethrowException[functionCall,
 				"TagPattern" ->
@@ -2265,27 +2292,48 @@ functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 				boxes, boxRules, FilterRules[data, Options[ToString]]
 			];
 		
+		texCode =
+			StringReplace[texCode,
+				StringExpression[
+					$commandCharsToTeX[[1, 1]] <> ")",
+					ws:(" " | "\t")...,
+					$commandCharsToTeX[[1, 1]] <> "("
+				] :>
+					ws
+			];
+		
+		{"TeXCode" -> texCode, data}
+	]
+
+
+(* ::Subsubsection:: *)
+(*mmaCellProcessor*)
+
+
+Options[mmaCellProcessor] = {"Indentation" -> "  "}
+
+
+functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
+	Module[{texCode, style, texOptions, indentation},
+		{texCode, style, texOptions, indentation} =
+			processorDataLookup[functionCall,
+				{data, Options[mmaCellProcessor]},
+				{"TeXCode", "Style", "TeXOptions", "Indentation"}
+			];
+		
 		texCode = StringJoin[
 			"\\begin{mmaCell}",
 			optionsToTeX["[", texOptions, "]"],
 			"{", style, "}",
 			StringReplace[
-				StringReplace[
-					StringJoin["\n", texCode],
-					StringExpression[
-						$commandCharsToTeX[[1, 1]] <> ")",
-						ws:(" " | "\t")...,
-						$commandCharsToTeX[[1, 1]] <> "("
-					] :>
-						ws
-				],
+				StringJoin["\n", texCode],
 				"\n" | "\[IndentingNewLine]" -> "\n" <> indentation
 			]
 			,
 			"\n\\end{mmaCell}"
 		];
 		
-		{"TeXCode" -> texCode, "BoxRules" -> boxRules, data}
+		{"TeXCode" -> texCode, data}
 	]
 
 
