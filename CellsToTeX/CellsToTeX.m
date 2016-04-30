@@ -1680,10 +1680,8 @@ $cellStyleOptions = {
 			$boxesToFormattedTeX,
 			headRulesToBoxRules[$boxHeadsToTeXCommands]
 		],
-	{"Code", "StringRules"} -> {},
 	{"Input" | "Output" | "Print" | "Message", "StringRules"} :>
 		Join[$stringsToTeX, $commandCharsToTeX],
-	{"Code", "NonASCIIHandler"} -> Identity,
 	{"Input", "NonASCIIHandler"} -> (charToTeX[#, FontWeight -> Bold]&),
 	{"Output" | "Print" | "Message", "NonASCIIHandler"} ->
 		(charToTeX[#, FontWeight -> Plain]&),
@@ -1692,6 +1690,23 @@ $cellStyleOptions = {
 		"Unicode",
 	{"Code" | "Input", "FormatType"} -> InputForm,
 	{"Output" | "Print" | "Message", "FormatType"} -> OutputForm,
+	{"Input", "TeXCodeSimplifier"} ->
+		(mergeAdjacentTeXCommands[
+			$commandCharsToTeX[[1, 1]] <> "pmb",
+			$commandCharsToTeX[[2, 1]],
+			$commandCharsToTeX[[3, 1]],
+			mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]
+		]&),
+	{"Output" | "Print" | "Message", "TeXCodeSimplifier"} ->
+		(mergeAdjacentTeXDelims[
+			$commandCharsToTeX[[1, 1]] <> "(",
+			$commandCharsToTeX[[1, 1]] <> ")",
+			#
+		]&),
 	{"Code" | "Input" | "Output", "Indexed"} -> True,
 	{"Print" | "Message", "Indexed"} -> False,
 	{"Code" | "Input", "Intype"} -> True,

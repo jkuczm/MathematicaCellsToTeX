@@ -505,9 +505,10 @@ With[
 				HoldForm @ {
 					"Boxes", "Style", "Processor", "BoxRules", "StringRules",
 					"NonASCIIHandler", "CharacterEncoding", "FormatType",
-					"Indexed", "Intype", "CellLabel", "SupportedCellStyles",
-					"CellStyleOptions", "ProcessorOptions", "TeXOptions",
-					"CatchExceptions", "CurrentCellIndex", "PreviousIntype"
+					"TeXCodeSimplifier", "Indexed", "Intype", "CellLabel",
+					"SupportedCellStyles", "CellStyleOptions",
+					"ProcessorOptions", "TeXOptions", "CatchExceptions",
+					"CurrentCellIndex", "PreviousIntype"
 				}
 			]
 	}
@@ -548,9 +549,10 @@ With[
 				HoldForm @ {
 					"Boxes", "Style", "Processor", "BoxRules", "StringRules",
 					"NonASCIIHandler", "CharacterEncoding", "FormatType",
-					"Indexed", "Intype", "CellLabel", "SupportedCellStyles",
-					"CellStyleOptions", "ProcessorOptions", "TeXOptions",
-					"CatchExceptions", "CurrentCellIndex", "PreviousIntype"
+					"TeXCodeSimplifier", "Indexed", "Intype", "CellLabel",
+					"SupportedCellStyles", "CellStyleOptions",
+					"ProcessorOptions", "TeXOptions", "CatchExceptions",
+					"CurrentCellIndex", "PreviousIntype"
 				},
 				HoldForm @ Identity
 			]

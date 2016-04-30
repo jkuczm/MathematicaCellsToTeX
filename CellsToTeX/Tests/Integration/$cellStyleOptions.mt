@@ -32,8 +32,6 @@ Test[
 				extractCellOptionsProcessor
 			],
 		"BoxRules" :> $linearBoxesToTeX,
-		"StringRules" -> {},
-		"NonASCIIHandler" -> Identity,
 		"CharacterEncoding" -> "ASCII",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -64,6 +62,17 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Bold]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> InputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXCommands[
+				$commandCharsToTeX[[1, 1]] <> "pmb",
+				$commandCharsToTeX[[2, 1]],
+				$commandCharsToTeX[[3, 1]],
+				CellsToTeX`Internal`mergeAdjacentTeXDelims[
+					$commandCharsToTeX[[1, 1]] <> "(",
+					$commandCharsToTeX[[1, 1]] <> ")",
+					#
+				]
+			]&),
 		"Indexed" -> True,
 		"Intype" -> True
 	}
@@ -92,6 +101,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> True,
 		"Intype" -> False
 	}
@@ -120,6 +135,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> False,
 		"Intype" -> False,
 		"CellLabel" -> None
@@ -149,6 +170,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> False,
 		"Intype" -> False,
 		"CellLabel" -> None
