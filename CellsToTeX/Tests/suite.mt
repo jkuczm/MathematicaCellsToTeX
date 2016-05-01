@@ -47,5 +47,6 @@ TestSuite[{
 	"Integration/toInputFormProcessor.mt",
 	"Integration/annotateSyntaxProcessor.mt",
 	"Integration/mmaCellGraphicsProcessor.mt",
-	"Integration/CellToTeX.mt"
+	"Integration/CellToTeX.mt",
+	"Integration/CellsToTeXPreamble.mt"
 }]
