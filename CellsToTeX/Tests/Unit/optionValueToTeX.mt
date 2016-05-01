@@ -19,6 +19,31 @@ PrependTo[$ContextPath, "CellsToTeX`Internal`"]
 
 
 Test[
+	optionValueToTeX[""]
+	,
+	""
+	,
+	TestID -> "empty string"
+]
+
+
+Test[
+	optionValueToTeX[True]
+	,
+	"true"
+	,
+	TestID -> "True"
+]
+Test[
+	optionValueToTeX[False]
+	,
+	"false"
+	,
+	TestID -> "False"
+]
+
+
+Test[
 	optionValueToTeX[2]
 	,
 	"2"
@@ -126,6 +151,19 @@ Test[
 	"{Out[\\mmaCellIndex]\\mmaCellForm*=}"
 	,
 	TestID -> "complex expression: braced"
+]
+
+
+Test[
+	optionValueToTeX[{
+		"opt1" :> "[x]",
+		"opt2" -> {"opt2a" -> "val", "opt2b" -> True},
+		"opt3" -> 5
+	}]
+	,
+	"{opt1={[x]},opt2={opt2a=val,opt2b=true},opt3=5}"
+	,
+	TestID -> "nested list of options"
 ]
 
 

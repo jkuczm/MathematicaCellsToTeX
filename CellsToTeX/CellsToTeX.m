@@ -1456,11 +1456,15 @@ labelToKeyVal[
 (*optionValueToTeX*)
 
 
+optionValueToTeX[True] = "true"
+
+optionValueToTeX[False] = "false"
+
+optionValueToTeX[subOpts:{OptionsPattern[]}] := optionsToTeX["{", subOpts, "}"]
+
 optionValueToTeX[val_] :=
 	With[{str = ToString[val]},
-		If[StringTake[str, 1] === "{" && StringTake[str, -1] === "}" ||
-				StringFreeQ[str, {"[", "]", ",", "="}]
-		,
+		If[StringMatchQ[str, "{*}"] || StringFreeQ[str, {"[", "]", ",", "="}],
 			str
 		(* else *),
 			"{" <> str <> "}"
@@ -1472,13 +1476,14 @@ optionValueToTeX[val_] :=
 (*optionsToTeX*)
 
 
-optionsToTeX[keyval:{(Rule | RuleDelayed)[_String, _]...}] :=
-	StringJoin[Riffle[(#1 <> "=" <> optionValueToTeX[#2]) & @@@ keyval, ","]]
+optionsToTeX[keyval:{OptionsPattern[]}] :=
+	StringJoin @
+		Riffle[(ToString[#1] <> "=" <> optionValueToTeX[#2]) & @@@ keyval, ","]
 
 optionsToTeX[_String, {}, _String] := ""
 
 optionsToTeX[
-	pre_String, keyval:{(Rule | RuleDelayed)[_String, _]...}, post_String
+	pre_String, keyval:{OptionsPattern[]}, post_String
 ] :=
 	pre <> optionsToTeX[keyval] <> post
 

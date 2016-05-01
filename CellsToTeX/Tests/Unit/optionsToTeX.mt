@@ -80,6 +80,22 @@ Test[
 ]
 
 
+Test[
+	optionsToTeX[{
+		"opt1" -> {
+			"opt1a" -> "{[a}",
+			"opt1b" :> -1,
+			"opt1c" -> {"opt1c1" :> False}
+		},
+		"opt2" -> ""
+	}]
+	,
+	"opt1={opt1a={[a},opt1b=-1,opt1c={opt1c1=false}},opt2="
+	,
+	TestID -> "nested"
+]
+
+
 (* ::Subsection:: *)
 (*pre and post*)
 
@@ -99,6 +115,15 @@ Test[
 	"testPre2label={In[\\mmaCellIndex]:=}testPost2"
 	,
 	TestID -> "pre and post: non-empty"
+]
+
+
+Test[
+	optionsToTeX["testPre3", {"name" :> {"subName" -> "val"}}, "testPost3"]
+	,
+	"testPre3name={subName=val}testPost3"
+	,
+	TestID -> "pre and post: nested"
 ]
 
 
