@@ -156,6 +156,13 @@ returns String with TeX code representing given String \"str\". By default \
 DownValues of texMathReplacement are used by CellsToTeXPreamble."
 
 
+texMathReplacementRegister::usage =
+"\
+texMathReplacementRegister[\"str\"] \
+defines TeX code math replacement for given String \"str\", if it's not \
+already defined. Returns  \"str\"."
+
+
 makeString::usage =
 "\
 makeString[boxes] \
@@ -1934,6 +1941,22 @@ defaultAnnotationType[
 ] := "DefinedSymbol"
 
 defaultAnnotationType[_Symbol | _String] := "UndefinedSymbol"
+
+
+(* ::Subsubsection:: *)
+(*texMathReplacementRegister*)
+
+
+texMathReplacementRegister[str_String] := (
+	If[! StringQ @ texMathReplacement[str],
+		With[{texCode = StringTrim @ System`Convert`TeXFormDump`MakeTeX[str]},
+			If[texCode =!= "",
+				texMathReplacement[str] = texCode
+			]
+		]
+	];
+	str
+)
 
 
 (* ::Subsubsection:: *)
