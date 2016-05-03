@@ -49,5 +49,6 @@ TestSuite[{
 	"Integration/annotateSyntaxProcessor.mt",
 	"Integration/mmaCellGraphicsProcessor.mt",
 	"Integration/CellToTeX.mt",
-	"Integration/CellsToTeXPreamble.mt"
+	"Integration/CellsToTeXPreamble.mt",
+	"Integration/fullNotebooks.mt"
 }]

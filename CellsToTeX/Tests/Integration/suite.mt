@@ -12,5 +12,6 @@ TestSuite[{
 	"annotateSyntaxProcessor.mt",
 	"mmaCellGraphicsProcessor.mt",
 	"CellToTeX.mt",
-	"CellsToTeXPreamble.mt"
+	"CellsToTeXPreamble.mt",
+	"fullNotebooks.mt"
 }]
