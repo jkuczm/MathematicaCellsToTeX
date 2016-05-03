@@ -104,6 +104,47 @@ Block[{\[Phi]1},
 ]
 
 
+Block[{texMathReplacement},
+	texMathReplacement["\[UnderBracket]"] = "\\textvisiblespace";
+	UsingFrontEnd @ Test[
+		CellToTeX[
+			{
+				\[Alpha]_ \[RuleDelayed] \[Alpha],
+				x \[Equal] \[Beta]\[UnderBracket]\[Gamma]
+			} // MakeBoxes
+			,
+			"Style" -> "Code",
+			"ProcessorOptions" -> {
+				"NonASCIIHandler" -> texMathReplacementRegister,
+				"CharacterEncoding" -> "Unicode"
+			}
+		]
+		,
+		"\
+\\begin{mmaCell}{Code}
+  {\\mmaPat{\[Alpha]_} :> \\mmaPat{\[Alpha]}, x == \\mmaUnd{\[Beta]\[UnderBracket]\[Gamma]}}
+\\end{mmaCell}"
+		,
+		TestID -> "pure boxes: syntax, non-ASCII symbols (private Unicode): \
+Code, Unicode encoding, math replacements"
+	];
+	Test[
+		texMathReplacement // DownValues
+		,
+		{
+			HoldPattern@texMathReplacement@"\[Alpha]" :> "\\alpha",
+			HoldPattern@texMathReplacement@"\[Beta]" :> "\\beta",
+			HoldPattern@texMathReplacement@"\[Gamma]" :> "\\gamma",
+			HoldPattern@texMathReplacement@"\[UnderBracket]" :>
+				"\\textvisiblespace"
+		}
+		,
+		TestID -> "pure boxes: syntax, non-ASCII symbols (private Unicode): \
+Code, Unicode encoding, math replacements: texMathReplacement"
+	]
+]
+
+
 Test[
 	CellToTeX[
 		BoxData @ RowBox[{
