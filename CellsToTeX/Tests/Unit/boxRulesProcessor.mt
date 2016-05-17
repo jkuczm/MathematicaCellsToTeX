@@ -69,10 +69,12 @@ withMockedFunctions@With[
 	{
 		newStringRules = {
 			testLookedupStringRule,
-			Verbatim[Pattern][
-				charPattName_, RegularExpression["[^[:ascii:]]"]
-			] :>
-				testLookedupNonASCIIHandler[charPattName_]
+			HoldPattern[
+				Verbatim[Pattern][
+					charPattName_, RegularExpression["[^[:ascii:]]"]
+				] :>
+					testLookedupNonASCIIHandler[charPattName_]
+			]
 		}
 	}
 	,
@@ -115,10 +117,12 @@ withMockedFunctions@With[
 withMockedFunctions@With[
 	{
 		newStringRules = {
-			Verbatim[Pattern][
-				charPattName_, RegularExpression["[^[:ascii:]]"]
-			] :>
-				testLookedupNonASCIIHandler[charPattName_]
+			HoldPattern[
+				Verbatim[Pattern][
+					charPattName_, RegularExpression["[^[:ascii:]]"]
+				] :>
+					testLookedupNonASCIIHandler[charPattName_]
+			]
 		}
 	}
 	,

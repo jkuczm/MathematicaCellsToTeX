@@ -9,7 +9,8 @@ BeginPackage["CellsToTeX`Tests`Unit`charToTeX`", {"MUnit`"}]
 
 Get["CellsToTeX`"]
 
-PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
+$ContextPath =
+	Join[{"CellsToTeX`Configuration`", "CellsToTeX`Backports`"}, $ContextPath]
 
 
 (* ::Section:: *)

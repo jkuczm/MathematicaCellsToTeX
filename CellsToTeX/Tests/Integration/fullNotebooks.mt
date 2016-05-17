@@ -81,7 +81,7 @@ Test[
 
 
 Block[{$cellStyleOptions = $cellStyleOptions, Export = #1&},
-	Test[
+	UsingFrontEnd @ Test[
 		$cellStyleOptions =
 			Join[
 				{
