@@ -71,7 +71,7 @@ withMockedFunctions@With[
 			testLookedupStringRule,
 			HoldPattern[
 				Verbatim[Pattern][
-					charPattName_, RegularExpression["[^[:ascii:]]"]
+					charPattName_, RegularExpression["[^\\x00-\\x7F]"]
 				] :>
 					testLookedupNonASCIIHandler[charPattName_]
 			]
@@ -119,7 +119,7 @@ withMockedFunctions@With[
 		newStringRules = {
 			HoldPattern[
 				Verbatim[Pattern][
-					charPattName_, RegularExpression["[^[:ascii:]]"]
+					charPattName_, RegularExpression["[^\\x00-\\x7F]"]
 				] :>
 					testLookedupNonASCIIHandler[charPattName_]
 			]

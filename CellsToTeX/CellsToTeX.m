@@ -1320,7 +1320,7 @@ commonestAnnotationTypes[boxes_, allowedTypes_, specialChars : True|False] :=
 				name_String
 			(* else *),
 				name_String /;
-					StringMatchQ[name, RegularExpression["[[:ascii:]]*"]]
+					StringMatchQ[name, RegularExpression["[\\x00-\\x7F]*"]]
 			],
 			type:allowedTypes,
 			___
@@ -2368,7 +2368,7 @@ functionCall:boxRulesProcessor[data:{___?OptionQ}] :=
 		If[nonASCIIHandler =!= Identity,
 			With[{nonASCIIHandler = nonASCIIHandler},
 				AppendTo[stringRules,
-					char:RegularExpression["[^[:ascii:]]"] :>
+					char:RegularExpression["[^\\x00-\\x7F]"] :>
 						nonASCIIHandler[char]
 				]
 			]
