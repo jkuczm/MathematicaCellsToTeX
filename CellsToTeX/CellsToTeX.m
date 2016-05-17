@@ -115,9 +115,10 @@ $annotationTypesToTeX::usage =
 "\
 $annotationTypesToTeX \
 is List of rules with left hand sides being String with annotation type and \
-right hand sides being pairs of strings. First element of pair is key used in \
-TeX mmaCell optional argument, second element is TeX command used to annotate \
-verbatim code."
+right hand sides being lists of two elements. First element of pair is a \
+String with key used in TeX mmaCell optional argument, or None if there's no \
+key associated with annotation type. Second element is String with TeX \
+command used to annotate verbatim code."
 
 
 $currentValueObj::usage =
@@ -207,6 +208,12 @@ processorDataLookup[processorCall, data, {key1, key2, ...}] \
 returns List of values associated with given keys, if all of them are in \
 given data. Otherwise throws \
 CellsToTeXException[\"Missing\", \"Keys\", \"ProcessorArgument\"]."
+
+
+syntaxBox::usage =
+"\
+syntaxBox[boxes, type] \
+represents boxes that in an expression perform sytnax role of given type."
 
 
 (* ::Subsubsection:: *)
@@ -490,11 +497,13 @@ is returned. Given list should have at least one element."
 
 commonestAnnotationTypes::usage =
 "\
-commonestAnnotationTypes[boxes, specialChars] \
-returns List of rules with left hand sides being symbol names and right hand \
-sides being most common annotation types of those symbols in given boxes. \
-If specialChars is True all symbols are inspected, if it's False only symbols \
-with names composed of ASCII characters are inspected."
+commonestAnnotationTypes[boxes, allowedTypes, specialChars] \
+returns List of rules with left hand sides being strings and right hand sides \
+being most common annotation types of those strings in given boxes. \
+Only annotation types matching allowedTypes are taken into consideration when \
+determining commonest annotation types. If specialChars is True all strings \
+in boxes are inspected, if it's False only those composed of ASCII characters \
+are inspected."
 
 
 annotationTypesToKeyVal::usage =
@@ -508,7 +517,7 @@ representing syntax coloring."
 annotationRulesToBoxRules::usage =
 "\
 annotationRulesToBoxRules[{type1 -> {key1, command1}, ...}] \
-returns List of delayed rules that transform SyntaxBox with given typei to \
+returns List of delayed rules that transform syntaxBox with given typei to \
 TeX commandi."
 
 
@@ -1303,17 +1312,17 @@ defaultOrFirst[{first_, ___}, _] := first
 (*commonestAnnotationTypes*)
 
 
-commonestAnnotationTypes[boxes_, specialChars : True | False] := 
-	(* Get list of symbol name - symbol type pairs. *)
+commonestAnnotationTypes[boxes_, allowedTypes_, specialChars : True|False] := 
+	(* Get list of string box - syntax type pairs. *)
 	Cases[boxes,
-		SyntaxBox[
+		syntaxBox[
 			If[specialChars,
 				name_String
 			(* else *),
 				name_String /;
 					StringMatchQ[name, RegularExpression["[[:ascii:]]*"]]
 			],
-			type_,
+			type:allowedTypes,
 			___
 		] :>
 			{name, type}
@@ -1376,7 +1385,7 @@ annotationRulesToBoxRules[rules:{_Rule...}] :=
 					end = $commandCharsToTeX[[3, 1]]
 				}
 				,
-				SyntaxBox[boxes_, type, ___] :>
+				syntaxBox[boxes_, type, ___] :>
 					start <> makeString[boxes] <> end
 			]
 		,
@@ -1872,7 +1881,9 @@ $annotationTypesToTeX = {
 	"SymbolShadowing" -> {"shadowing", "mmaShd"},
 	"SyntaxError" -> {"syntaxerror", "mmaSnt"},
 	"EmphasizedSyntaxError" -> {"emphasizedsyntaxerror", "mmaEmp"},
-	"FormattingError" -> {"formattingerror", "mmaFmt"}
+	"FormattingError" -> {"formattingerror", "mmaFmt"},
+	"String" -> {None, "mmaStr"},
+	"Comment" -> {None, "mmaCmt"}
 }
 
 
@@ -2164,13 +2175,9 @@ functionCall:trackCellIndexProcessor[data:{___?OptionQ}] :=
 Options[annotateSyntaxProcessor] = {
 	"BoxRules" -> {},
 	"AnnotationTypesToTeX" :> $annotationTypesToTeX,
-	"AnnotationTypesNormalizer" ->
-		Composition[First, NormalizeAnnotationTypes],
 	"CommonestTypesAsTeXOptions" -> "ASCII",
-	"BoxesToAnnotationTypes" :>
-		Append[$BoxesToAnnotationTypes,
-			_String?SyntaxAnnotations`Private`symbolNameQ -> {"DefinedSymbol"}
-		]
+	"StringBoxToTypes" -> Automatic,
+	"AnnotateComments" -> Automatic
 }
 
 
@@ -2178,34 +2185,49 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 	Module[
 		{
 			boxes, boxRules, texOptions,
-			annotationTypesToTeX, annotationTypesNormalizer,
-			commonestTypesAsTeXOptions, boxesToAnnotationTypes,
-			preprocessedBoxes, commonestTypes
+			annotationTypesToTeX, commonestTypesAsTeXOptions,
+			stringBoxToTypes, annotateComments,
+			preprocessedBoxes, commonestTypes, annotationTypesToTeXKeys
 		}
 		,
 		{
 			boxes, boxRules, texOptions,
-			annotationTypesToTeX, annotationTypesNormalizer,
-			commonestTypesAsTeXOptions, boxesToAnnotationTypes
+			annotationTypesToTeX, commonestTypesAsTeXOptions,
+			stringBoxToTypes, annotateComments
 		} =
 			processorDataLookup[functionCall,
 				{data, Options[annotateSyntaxProcessor]},
 				{
 					"Boxes", "BoxRules", "TeXOptions",
-					"AnnotationTypesToTeX", "AnnotationTypesNormalizer",
-					"CommonestTypesAsTeXOptions", "BoxesToAnnotationTypes"
+					"AnnotationTypesToTeX", "CommonestTypesAsTeXOptions",
+					"StringBoxToTypes", "AnnotateComments"
 				}
 			];
+		
+		If[stringBoxToTypes === Automatic,
+			stringBoxToTypes =
+				{
+					If[commonestTypesAsTeXOptions === False,
+						Automatic
+					(* else *),
+						(* Delete String type annotation rule. *)
+						Delete[SyntaxAnnotations`Private`$stringBoxToTypes, 2]
+					]
+					,
+					_String?SyntaxAnnotations`Private`symbolNameQ ->
+						{"DefinedSymbol"}
+				} // Flatten
+		];
+		If[annotateComments === Automatic,
+			annotateComments = commonestTypesAsTeXOptions === False
+		];
 		
 		preprocessedBoxes =
 			AnnotateSyntax[
 				boxes,
-				"BoxRules" -> {
-					SyntaxBox[box_, types__] :>
-						SyntaxBox[box, annotationTypesNormalizer[types]]
-				},
-				"BoxesToAnnoattiontypes" -> boxesToAnnotationTypes
-					
+				"Annotation" -> (syntaxBox[#1, First@#2]&),
+				"StringBoxToTypes" -> stringBoxToTypes,
+				"AnnotateComments" -> annotateComments
 			];
 		
 		Switch[commonestTypesAsTeXOptions,
@@ -2213,40 +2235,43 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 				commonestTypes =
 					commonestAnnotationTypes[
 						preprocessedBoxes,
+						Except[
+							Alternatives @@ Cases[annotationTypesToTeX,
+								_[type_, {None, _}] :> type
+							]
+						],
 						TrueQ[commonestTypesAsTeXOptions]
 					];
 		
 				preprocessedBoxes =
 					preprocessedBoxes /.
-						(SyntaxBox[#1, #2, ___] :> #1 & @@@ commonestTypes);
+						(syntaxBox[#1, #2] :> #1 & @@@ commonestTypes);
+				
+				annotationTypesToTeXKeys =
+					Cases[annotationTypesToTeX,
+						h_[type_, {key:Except[None], _}] :>
+							h[type, "more" <> key]
+					];
 		
 				texOptions =
 					Join[texOptions,
 						annotationTypesToKeyVal[
 							commonestTypes
 							,
-							Append[
-								(* MapAt[First, annotationTypesToTeX, {All, 2}]
-									doesn't work in v8. *)
-								#[[0]][#[[1]], "more" <> #[[2, 1]]] & /@
-									annotationTypesToTeX
-								,
+							Append[annotationTypesToTeXKeys,
 								unsupportedType_ :>
 									throwException[functionCall,
 										{"Unsupported", "AnnotationType"},
 										{
 											unsupportedType,
-											annotationTypesToTeX[[All, 1]]
+											annotationTypesToTeXKeys[[All, 1]]
 										}
 									]
 							]
 						]
 					]
 			,
-			False,
-				Null
-			,
-			_,
+			Except[False],
 				throwException[functionCall,
 					{"Unsupported", "OptionValue", "CommonestTypesAsTeXOptions"},
 					{commonestTypesAsTeXOptions, {True, "ASCII", False}}

@@ -31,7 +31,7 @@ Block[{$commandCharsToTeX = {"%" -> "%%", "<" -> "%<", ">" -> "%>"}},
 		{"type" -> {"key", "comand"}} // annotationRulesToBoxRules
 		,
 		{
-			SyntaxBox[
+			syntaxBox[
 				Verbatim[Pattern][boxes_, Verbatim[_]], "type", Verbatim[___]
 			] :>
 				"%comand<" <> makeString[boxes_] <> ">"
@@ -47,12 +47,12 @@ Block[{$commandCharsToTeX = {"\\" -> "test1", "{" -> "test2", "}" -> "test3"}},
 			annotationRulesToBoxRules
 		,
 		{
-			SyntaxBox[
+			syntaxBox[
 				Verbatim[Pattern][boxes_, Verbatim[_]], "type1", Verbatim[___]
 			] :>
 				"\\comand1{" <> makeString[boxes_] <> "}"
 			,
-			SyntaxBox[
+			syntaxBox[
 				Verbatim[Pattern][boxes_, Verbatim[_]], "type2", Verbatim[___]
 			] :>
 				"\\comand2{" <> makeString[boxes_] <> "}"
