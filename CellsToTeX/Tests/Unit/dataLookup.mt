@@ -139,7 +139,7 @@ Block[{a},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -148,7 +148,8 @@ Block[{a},
 						HoldForm["Keys"],
 						HoldForm[{"a"}],
 						HoldForm[{}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]
@@ -169,7 +170,7 @@ Block[{a, b, c},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -178,7 +179,8 @@ Block[{a, b, c},
 						HoldForm["Keys"],
 						HoldForm[{"c"}],
 						HoldForm[{"a"}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]
@@ -199,7 +201,7 @@ Block[{a, b, c, d, e},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -208,7 +210,8 @@ Block[{a, b, c, d, e},
 						HoldForm["Keys"],
 						HoldForm[{"e"}],
 						HoldForm[{"a", "c"}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]
@@ -229,7 +232,7 @@ Block[{a, b, c, d},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -238,7 +241,8 @@ Block[{a, b, c, d},
 						HoldForm["Keys"],
 						HoldForm[{"d"}],
 						HoldForm[{"a"}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]
@@ -316,7 +320,7 @@ Block[{a, b, c},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -325,7 +329,8 @@ Block[{a, b, c},
 						HoldForm["Keys"],
 						HoldForm[{"a", "c"}],
 						HoldForm[{}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]
@@ -346,7 +351,7 @@ Block[{a, b, c},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "Keys"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missing,
 					"MessageParameters" -> {
@@ -355,7 +360,8 @@ Block[{a, b, c},
 						HoldForm["Keys"],
 						HoldForm[{"c"}],
 						HoldForm[{"a"}]
-					}
+					},
+					"Type" -> {"Missing", "Keys"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys"]

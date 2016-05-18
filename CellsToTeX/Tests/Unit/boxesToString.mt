@@ -584,7 +584,7 @@ Test[
 	]
 	,
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Unsupported", "FormatType"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
 				"MessageParameters" -> {
@@ -594,7 +594,8 @@ Test[
 					HoldForm @ "FormatType",
 					HoldForm @ TeXForm,
 					HoldForm @ {InputForm, OutputForm}
-				}
+				},
+				"Type" -> {"Unsupported", "FormatType"}
 			]
 		],
 		CellsToTeXException["Unsupported", "FormatType"]

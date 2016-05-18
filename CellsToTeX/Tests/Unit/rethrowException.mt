@@ -38,14 +38,15 @@ Module[{testVar, value, type, thrownBy},
 	Test[
 		Catch[
 			rethrowException[testVar = "Evaluation leaked"] @ Throw[
-				Failure[CellsToTeXException[type],
+				Failure[CellsToTeXException,
 					Association[
 						"MessageTemplate" :> CellsToTeXException::msg,
 						"MessageParameters" -> {
 							HoldForm @ thrownBy,
 							HoldForm @ CellsToTeXException[type],
 							HoldForm @ value
-						}
+						},
+						"Type" -> {type}
 					]
 				],
 				CellsToTeXException[type]
@@ -57,14 +58,15 @@ Module[{testVar, value, type, thrownBy},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException[type],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::msg,
 					"MessageParameters" -> {
 						HoldForm[testVar = "Evaluation leaked"],
 						HoldForm @ CellsToTeXException[type],
 						HoldForm @ value
-					}
+					},
+					"Type" -> {type}
 				]
 			],
 			CellsToTeXException[type]
@@ -96,10 +98,7 @@ Module[{rethrownBy, nonFailure, type},
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException[
-					"Error", "InvalidExceptionValue", "NonFailureObject"
-				],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::error,
 					"MessageParameters" -> {
@@ -112,7 +111,9 @@ Module[{rethrownBy, nonFailure, type},
 							"NonFailureObject"
 						],
 						HoldForm @ nonFailure
-					}
+					},
+					"Type" ->
+						{"Error", "InvalidExceptionValue", "NonFailureObject"}
 				]
 			],
 			CellsToTeXException[
@@ -127,7 +128,7 @@ Module[{rethrownBy, type},
 	Test[
 		Catch[
 			rethrowException[rethrownBy] @ Throw[
-				Failure[CellsToTeXException[type],
+				Failure[CellsToTeXException,
 					Association["MessageTemplate" :> CellsToTeXException::msg]
 				],
 				CellsToTeXException[type]
@@ -139,16 +140,12 @@ Module[{rethrownBy, type},
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException[
-					"Error", "InvalidExceptionValue", "NoMessageParameters"
-				]
-				,
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::error,
 					"MessageParameters" -> {
 						HoldForm @ rethrowException[rethrownBy] @ Throw[
-							Failure[CellsToTeXException[type],
+							Failure[CellsToTeXException,
 								Association[
 									"MessageTemplate" :>
 										CellsToTeXException::msg
@@ -160,11 +157,14 @@ Module[{rethrownBy, type},
 							"Error", "InvalidExceptionValue",
 							"NoMessageParameters"
 						],
-						HoldForm[#]& @ Failure[CellsToTeXException[type],
+						HoldForm[#]& @ Failure[CellsToTeXException,
 							Association[
 								"MessageTemplate" :> CellsToTeXException::msg
 							]
 						]
+					},
+					"Type" -> {
+						"Error", "InvalidExceptionValue", "NoMessageParameters"
 					}
 				]
 			],
@@ -212,14 +212,15 @@ Module[
 				"MessageTemplate" :> CellsToTeXException::newMsg,
 				"AdditionalMessageParameters" -> {additionalVal}
 			] @ Throw[
-				Failure[CellsToTeXException[type, subType],
+				Failure[CellsToTeXException,
 					Association[
 						"MessageTemplate" :> CellsToTeXException::msg,
 						"MessageParameters" -> {
 							HoldForm @ thrownBy,
 							HoldForm @ CellsToTeXException[type, subType],
 							HoldForm @ value
-						}
+						},
+						"Type" -> {type, subType}
 					]
 				],
 				CellsToTeXException[type, subType]
@@ -231,7 +232,7 @@ Module[
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException[type, subType, additionalType],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::newMsg,
 					"MessageParameters" -> {
@@ -240,7 +241,8 @@ Module[
 							CellsToTeXException[type, subType, additionalType],
 						HoldForm @ value,
 						HoldForm @ additionalVal
-					}
+					},
+					"Type" -> {type, subType, additionalType}
 				]
 			],
 			CellsToTeXException[type, subType, additionalType]
@@ -270,14 +272,15 @@ Module[
 				"MessageTemplate" :> CellsToTeXException::newMsg,
 				"AdditionalMessageParameters" -> {additionalVal}
 			] @ Throw[
-				Failure[CellsToTeXException[type],
+				Failure[CellsToTeXException,
 					Association[
 						"MessageTemplate" :> CellsToTeXException::msg,
 						"MessageParameters" -> {
 							HoldForm @ thrownBy,
 							HoldForm @ CellsToTeXException[type],
 							HoldForm @ value
-						}
+						},
+						"Type" -> {type}
 					]
 				],
 				CellsToTeXException[type]
@@ -289,14 +292,15 @@ Module[
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException[type],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::msg,
 					"MessageParameters" -> {
 						HoldForm @ thrownBy,
 						HoldForm @ CellsToTeXException[type],
 						HoldForm @ value
-					}
+					},
+					"Type" -> {type}
 				]
 			],
 			CellsToTeXException[type]

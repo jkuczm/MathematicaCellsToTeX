@@ -84,8 +84,7 @@ Module[{unsupportedFontWeight},
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException["Unsupported", "OptionValue", FontWeight],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
 					"MessageParameters" -> {
@@ -98,7 +97,8 @@ Module[{unsupportedFontWeight},
 						HoldForm @ "OptionValue",
 						HoldForm @ unsupportedFontWeight,
 						HoldForm @ {Plain, Bold}
-					}
+					},
+					"Type" -> {"Unsupported", "OptionValue", FontWeight}
 				]
 			],
 			CellsToTeXException["Unsupported", "OptionValue", FontWeight]

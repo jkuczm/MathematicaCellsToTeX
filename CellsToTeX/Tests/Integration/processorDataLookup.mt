@@ -57,8 +57,7 @@ Block[{testProcessor, testVar, a, b, c},
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException["Missing", "Keys", "ProcessorArgument"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missingProcArg,
 					"MessageParameters" -> {
@@ -70,7 +69,8 @@ Block[{testProcessor, testVar, a, b, c},
 						HoldForm @ "Keys",
 						HoldForm @ {"c"},
 						HoldForm @ {"a"}
-					}
+					},
+					"Type" -> {"Missing", "Keys", "ProcessorArgument"}
 				]
 			],
 			CellsToTeXException["Missing", "Keys", "ProcessorArgument"]

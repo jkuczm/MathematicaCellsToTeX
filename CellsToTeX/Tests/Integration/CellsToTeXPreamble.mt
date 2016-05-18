@@ -90,14 +90,14 @@ Module[{unsupportedValue},
 				]
 		}
 		,
-		TestMatch[
+		Test[
 			CellsToTeXPreamble["Gobble" -> unsupportedValue]
 			,
-			Failure[
-				CellsToTeXException["Unsupported", "OptionValue", "Gobble"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
-					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+					"Type" -> {"Unsupported", "OptionValue", "Gobble"}
 				]
 			]
 			,
@@ -161,16 +161,14 @@ Module[{unsupportedValue},
 				]
 		}
 		,
-		TestMatch[
+		Test[
 			CellsToTeXPreamble["UseListings" -> unsupportedValue]
 			,
-			Failure[
-				CellsToTeXException[
-					"Unsupported", "OptionValue", "UseListings"
-				],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
-					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+					"Type" -> {"Unsupported", "OptionValue", "UseListings"}
 				]
 			]
 			,
@@ -211,15 +209,14 @@ Module[{unsupportedValue},
 				]
 		}
 		,
-		TestMatch[
+		Test[
 			CellsToTeXPreamble["TeXOptions" -> unsupportedValue]
 			,
-			Failure[
-				CellsToTeXException["Unsupported", "OptionValue", "TeXOptions"]
-				,
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
-					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+					"Type" -> {"Unsupported", "OptionValue", "TeXOptions"}
 				]
 			]
 			,
@@ -268,16 +265,14 @@ With[
 			]
 	}
 	,
-	TestMatch[
+	Test[
 		CellsToTeXPreamble["TeXMathReplacement" -> "unsupportedValue"]
 		,
-		Failure[
-			CellsToTeXException[
-				"Unsupported", "OptionValue", "TeXMathReplacement"
-			],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Unsupported", "OptionValue", "TeXMathReplacement"}
 			]
 		]
 		,

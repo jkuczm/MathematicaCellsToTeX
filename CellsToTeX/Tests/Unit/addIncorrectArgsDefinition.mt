@@ -67,19 +67,7 @@ Module[{testFunc, testResult, testArg1, testArg2, oldDownValues},
 			HoldComplete
 		]
 		,
-		HoldComplete @@ {
-			Failure[CellsToTeXException["Error", "IncorrectArguments"],
-				Association[
-					"MessageTemplate" :> CellsToTeXException::error,
-					"MessageParameters" -> {
-						HoldForm @ testFunc[testArg1, testArg2],
-						HoldForm @
-							CellsToTeXException["Error", "IncorrectArguments"]
-					}
-				]
-			],
-			CellsToTeXException["Error", "IncorrectArguments"]
-		}
+		expectedIncorrectArgsError[testFunc[testArg1, testArg2]]
 		,
 		TestID -> "Symbol: testFunction evaluation: incorrect args"
 	]
@@ -123,7 +111,7 @@ Block[{testSym, testOtherSym},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Error", "UnwantedEvaluation"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::error,
 					"MessageParameters" -> {
@@ -131,7 +119,8 @@ Block[{testSym, testOtherSym},
 						HoldForm @
 							CellsToTeXException["Error", "UnwantedEvaluation"],
 						HoldForm @ testSym
-					}
+					},
+					"Type" -> {"Error", "UnwantedEvaluation"}
 				]
 			],
 			CellsToTeXException["Error", "UnwantedEvaluation"]
@@ -169,14 +158,15 @@ Test[
 	]
 	,
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Error", "NotSymbolName"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::error,
 				"MessageParameters" -> {
 					HoldForm @ addIncorrectArgsDefinition["not a symbol name"],
 					HoldForm @ CellsToTeXException["Error", "NotSymbolName"],
 					HoldForm @ "not a symbol name"
-				}
+				},
+				"Type" -> {"Error", "NotSymbolName"}
 			]
 		],
 		CellsToTeXException["Error", "NotSymbolName"]

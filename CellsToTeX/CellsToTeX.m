@@ -892,7 +892,8 @@ If[$VersionNumber < 10,
 		With[
 			{
 				msg = assoc["MessageTemplate"], 
-				msgParam = assoc["MessageParameters"]
+				msgParam = assoc["MessageParameters"], 
+				type = assoc["Type"]
 			}
 			, 
 			ToBoxes @ Interpretation[
@@ -901,18 +902,30 @@ If[$VersionNumber < 10,
 						{
 							Style["\[WarningSign]", "Message", FontSize -> 35]
 							,
-							"Message: " <> ToString[
+							Style["Message:", FontColor->GrayLevel[0.5]]
+							,
+							ToString[
 								StringForm[msg, Sequence @@ msgParam], 
 								StandardForm
 							]
 						},
-						{SpanFromAbove, "Tag:" <> ToString[tag, StandardForm]}
+						{
+							SpanFromAbove,
+							Style["Tag:", FontColor->GrayLevel[0.5]],
+							ToString[tag, StandardForm]
+						},
+						{
+							SpanFromAbove,
+							Style["Type:", FontColor->GrayLevel[0.5]],
+							ToString[type, StandardForm]
+						}
 					}, 
 					Alignment -> {Left, Top}
 				],
 				Failure[tag, assoc]
 			] /; msg =!= Missing["KeyAbsent", "MessageTemplate"] && 
-					msgParam =!= Missing["KeyAbsent", "MessageParameters"]
+				msgParam =!= Missing["KeyAbsent", "MessageParameters"] && 
+				msgParam =!= Missing["KeyAbsent", "Type"]
 		]
 ]
 
@@ -1011,12 +1024,13 @@ throwException[
 		}
 		,
 		Throw[
-			Failure[tag,
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :>
 						MessageName[CellsToTeXException, messageName],
 					"MessageParameters" ->
-						List @@ HoldForm /@ HoldComplete[thrownBy, tag, vals]
+						List @@ HoldForm /@ HoldComplete[thrownBy, tag, vals],
+					"Type" -> {types, type}
 				]
 			],
 			tag
@@ -1112,7 +1126,11 @@ rethrowException[rethrownBy_, opts:OptionsPattern[]] :=
 								HoldComplete[value]
 							]&;
 						
-						If[!MatchQ[value, Failure[tag, _Association]],
+						If[
+							!MatchQ[value,
+								Failure[CellsToTeXException, _Association]
+							]
+						(* then *),
 							throwInvValExc["NonFailureObject"]
 						];
 						
@@ -1137,17 +1155,18 @@ rethrowException[rethrownBy_, opts:OptionsPattern[]] :=
 								]
 							}
 							,
-							assoc = Append[assoc,
+							assoc = Append[assoc, {
 								"MessageParameters" -> {
 									HoldForm[rethrownBy],
 									HoldForm[newTag],
 									Sequence @@ Drop[msgParams, 2],
 									Sequence @@ HoldForm /@
 										additionalMessageParameters
-								}
-							];
+								},
+								"Type" -> List @@ newTag
+							}];
 							
-							Throw[Failure[newTag, assoc], newTag]
+							Throw[Failure[CellsToTeXException, assoc], newTag]
 						]
 					]
 				]

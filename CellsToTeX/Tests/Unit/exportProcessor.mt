@@ -267,7 +267,7 @@ withMockedFunctions[
 		,
 		With[{testCell = testCell, testData = testData},
 			HoldComplete @@ {
-				Failure[CellsToTeXException["Failed", "Export"],
+				Failure[CellsToTeXException,
 					Association[
 						"MessageTemplate" :> CellsToTeXException::failed,
 						"MessageParameters" -> {
@@ -277,7 +277,8 @@ withMockedFunctions[
 								testLookedupFileNameGeneratorResult, testCell,
 								testLookedupExportFormat, testData
 							]
-						}
+						},
+						"Type" -> {"Failed", "Export"}
 					]
 				],
 				CellsToTeXException["Failed", "Export"]

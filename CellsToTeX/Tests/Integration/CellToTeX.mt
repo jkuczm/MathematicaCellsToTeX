@@ -382,10 +382,11 @@ With[
 	TestMatch[
 		CellToTeX[Cell[BoxData["contents"]]] // normalAssoc
 		,
-		Failure[CellsToTeXException["Missing", "CellStyle"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::missingCellStyle,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Missing", "CellStyle"}
 			]
 		] // normalAssoc
 		,
@@ -413,10 +414,11 @@ With[
 		CellToTeX[Cell[BoxData["contents"], "testUnsupportedStyle"]] //
 			normalAssoc
 		,
-		Failure[CellsToTeXException["Unsupported", "CellStyle"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Unsupported", "CellStyle"}
 			]
 		] // normalAssoc
 		,
@@ -444,10 +446,11 @@ With[
 			"ProcessorOptions" -> {"FormatType" -> testFormatType}
 		] // normalAssoc
 		,
-		Failure[CellsToTeXException["Unsupported", "FormatType"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Unsupported", "FormatType"}
 			]
 		] // normalAssoc
 		,
@@ -476,10 +479,11 @@ With[
 			"ProcessorOptions" -> {"BoxRules" -> {testSupportedBox[b_] :> b}}
 		] // normalAssoc
 		,
-		Failure[CellsToTeXException["Unsupported", "Box"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Unsupported", "Box"}
 			]
 		] // normalAssoc
 		,
@@ -516,10 +520,11 @@ Block[
 				"Style" -> "Input"
 			] // normalAssoc
 			,
-			Failure[CellsToTeXException["Unsupported", "AnnotationType"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
-					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+					"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+					"Type" -> {"Unsupported", "AnnotationType"}
 				]
 			] // normalAssoc
 			,
@@ -555,10 +560,11 @@ With[
 			"ProcessorOptions" -> {"BoxRules" -> {testSupportedBox -> ""}}
 		] // normalAssoc
 		,
-		Failure[CellsToTeXException["Unsupported", "Box"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::unsupported,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Unsupported", "Box"}
 			]
 		] // normalAssoc
 		,
@@ -610,10 +616,11 @@ With[
 			"Processor" -> trackCellIndexProcessor
 		] // normalAssoc
 		,
-		Failure[CellsToTeXException["Missing", "Keys", "ProcessorArgument"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::missingProcArg,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Missing", "Keys", "ProcessorArgument"}
 			]
 		] // normalAssoc
 		,
@@ -655,10 +662,11 @@ With[
 			"Processor" -> Identity
 		] // normalAssoc
 		,
-		Failure[CellsToTeXException["Missing", "Keys", "ProcessorResult"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::missingProcRes,
-				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]]
+				"MessageParameters" -> (List @@@ heldMessage)[[1, 2;;]],
+				"Type" -> {"Missing", "Keys", "ProcessorResult"}
 			]
 		] // normalAssoc
 		,
