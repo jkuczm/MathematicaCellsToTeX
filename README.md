@@ -57,7 +57,7 @@ To load CellsToTeX package evaluate: ``Needs["CellsToTeX`"]``.
 ### Manual installation
 
 1. Download latest released
-   [CellsToTeX.zip](https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.1.4/CellsToTeX.zip)
+   [CellsToTeX.zip](https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.2.0/CellsToTeX.zip)
    file.
 
 2. Extract downloaded `CellsToTeX.zip` to any directory which is on
