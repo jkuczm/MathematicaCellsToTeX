@@ -26,13 +26,12 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				annotateSyntaxProcessor, toInputFormProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, annotateSyntaxProcessor,
+				toInputFormProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :> $linearBoxesToTeX,
-		"StringRules" -> {},
-		"NonASCIIHandler" -> Identity,
 		"CharacterEncoding" -> "ASCII",
 		"FormatType" -> InputForm,
 		"Indexed" -> True,
@@ -49,8 +48,8 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				annotateSyntaxProcessor, cellLabelProcessor,
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, annotateSyntaxProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
@@ -63,6 +62,17 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Bold]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> InputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXCommands[
+				$commandCharsToTeX[[1, 1]] <> "pmb",
+				$commandCharsToTeX[[2, 1]],
+				$commandCharsToTeX[[3, 1]],
+				CellsToTeX`Internal`mergeAdjacentTeXDelims[
+					$commandCharsToTeX[[1, 1]] <> "(",
+					$commandCharsToTeX[[1, 1]] <> ")",
+					#
+				]
+			]&),
 		"Indexed" -> True,
 		"Intype" -> True
 	}
@@ -77,8 +87,9 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
 			Join[
@@ -90,6 +101,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> True,
 		"Intype" -> False
 	}
@@ -104,8 +121,9 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				cellLabelProcessor, extractCellOptionsProcessor
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, cellLabelProcessor,
+				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
 			Join[
@@ -117,6 +135,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> False,
 		"Intype" -> False,
 		"CellLabel" -> None
@@ -132,8 +156,8 @@ Test[
 	{
 		"Processor" ->
 			Composition[
-				trackCellIndexProcessor, mmaCellProcessor,
-				messageLinkProcessor, cellLabelProcessor,
+				trackCellIndexProcessor, mmaCellProcessor, boxesToTeXProcessor,
+				boxRulesProcessor, messageLinkProcessor, cellLabelProcessor,
 				extractCellOptionsProcessor
 			],
 		"BoxRules" :>
@@ -146,6 +170,12 @@ Test[
 		"NonASCIIHandler" -> (charToTeX[#, FontWeight -> Plain]&),
 		"CharacterEncoding" -> "Unicode",
 		"FormatType" -> OutputForm,
+		"TeXCodeSimplifier" ->
+			(CellsToTeX`Internal`mergeAdjacentTeXDelims[
+				$commandCharsToTeX[[1, 1]] <> "(",
+				$commandCharsToTeX[[1, 1]] <> ")",
+				#
+			]&),
 		"Indexed" -> False,
 		"Intype" -> False,
 		"CellLabel" -> None
