@@ -9,7 +9,6 @@ TestSuite[{
 	"templateBoxDisplayBoxes.mt",
 	"boxesToInputFormBoxes.mt",
 	"boxesToString.mt",
-	"removeMathMode.mt",
 	"headRulesToBoxRules.mt",
 	"getBoxesToFormattedTeX.mt",
 	"charToTeX.mt",

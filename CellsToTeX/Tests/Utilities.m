@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 
-BeginPackage["CellsToTeX`Tests`Unit`Utilities`"]
+BeginPackage["CellsToTeX`Tests`Utilities`"]
 
 
 Unprotect["`*"]
@@ -29,18 +29,20 @@ function call."
 
 (* ::Section:: *)
 (*Implementation*)
-
-
-addIncorrectArgsDefinition /@ Names["`*"]
 	
 
 Begin["`Private`"]
 
 
+ClearAll["`*"]
+
+
 Needs["CellsToTeX`"]
 PrependTo[$ContextPath, "CellsToTeX`Backports`"]
 
-Needs["SyntaxAnnotations`"]
+
+CellsToTeX`Package`addIncorrectArgsDefinition /@
+	Names["CellsToTeX`Tests`Utilities`" ~~ Except["$"] ~~ Except["`"]...]
 
 
 (* ::Subsection:: *)

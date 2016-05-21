@@ -92,9 +92,9 @@ $boxHeadsToTeXCommands::usage =
 "\
 $boxHeadsToTeXCommands \
 is a List of rules assigning TeX command specifications to box heads. \
-Right hand side of rules can be a String with TeX command name or List of two \
-elements with first being TeX command name and second being positions of \
-command argumnets that, in TeX, will be typeset in math mode."
+Right hand side of rules can be a List of two elements with first being a \
+String with TeX command name and second being number of arguments of TeX \
+command."
 
 
 $charsToTeX::usage =
@@ -436,21 +436,12 @@ If value of FormatType option is different than InputForm and OutputForm \
 CellsToTeXException[\"Unsupported\", \"FormatType\"] is thrown."
 
 
-removeMathMode::usage =
-"\
-removeMathMode[str] \
-returns String str with removed outer math mode delimiters, if they were \
-present."
-
-
 headRulesToBoxRules::usage =
 "\
-headRulesToBoxRules[head -> \"name\"] \
-returns delayed rule that transforms box, with given head, to TeX formatting \
-command with given name.\
-
-headRulesToBoxRules[head -> {\"name\", pos}] \
-arguments with given positions pos will be typeset, in TeX, in math mode.\
+headRulesToBoxRules[head -> {\"name\", argsNo}] \
+returns delayed rule that transforms box expression, with given head, to TeX \
+formatting command with given name. Box can contain argsNo arguments and \
+options.\
 
 headRulesToBoxRules[{rule1, rule2, ...}] \
 returns List of transformed rules."
@@ -1241,47 +1232,24 @@ functionCall:boxesToString[
 
 
 (* ::Subsubsection:: *)
-(*removeMathMode*)
-
-
-removeMathMode[str_String] :=
-	StringReplace[str,
-		StartOfString ~~ ws1:WhitespaceCharacter... ~~ "\\(" ~~ contents___ ~~
-			"\\)" ~~ ws2:WhitespaceCharacter... ~~ EndOfString :>
-				ws1 <> contents <> ws2
-	]
-
-
-(* ::Subsubsection:: *)
 (*headRulesToBoxRules*)
 
 
 SetAttributes[headRulesToBoxRules, Listable]
 
 
-headRulesToBoxRules[boxHead_ -> texCommandName_String] :=
+headRulesToBoxRules[
+	boxHead_ -> {texCommandName_String, argsNo_Integer?NonNegative}
+] :=
 	With[
 		{
 			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
 			argStart = $commandCharsToTeX[[2, 1]],
 			argEnd = $commandCharsToTeX[[3, 1]]
-		},
-		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
+		}
+		,
+		HoldPattern @ boxHead[boxes:Repeated[_, {argsNo}], OptionsPattern[]] :>
 			comm <> (argStart <> makeString[#] <> argEnd& /@ {boxes})
-	]
-
-headRulesToBoxRules[boxHead_ -> {texCommandName_String, mathArgsPos_}] :=
-	With[
-		{
-			comm = $commandCharsToTeX[[1, 1]] <> texCommandName,
-			argStart = $commandCharsToTeX[[2, 1]],
-			argEnd = $commandCharsToTeX[[3, 1]]
-		},
-		HoldPattern @ boxHead[boxes___, OptionsPattern[]] :>
-			comm <> (
-				argStart <> # <> argEnd& /@
-					MapAt[removeMathMode, makeString /@ {boxes}, mathArgsPos]
-			)
 	]
 
 
@@ -1713,7 +1681,42 @@ $linearBoxesToTeX = {
 (*$boxesToFormattedTeX*)
 
 
-$boxesToFormattedTeX = {}
+$boxesToFormattedTeX =
+	(
+		#1["\[Integral]", scr_, OptionsPattern[]] :>
+			With[
+				{
+					argStart = $commandCharsToTeX[[2, 1]],
+					argEnd = $commandCharsToTeX[[3, 1]]
+				}
+				,
+				StringJoin[
+					$commandCharsToTeX[[1, 1]], #2,
+					argStart, "\\int", argEnd,
+					argStart, makeString[scr], argEnd
+				]
+			]
+	)& @@@ {
+		SubscriptBox -> "mmaSubM",
+		SuperscriptBox -> "mmaSupM"
+	}
+
+AppendTo[$boxesToFormattedTeX,
+	SubsuperscriptBox["\[Integral]", sub_, sup_, OptionsPattern[]] :>
+		With[
+			{
+				argStart = $commandCharsToTeX[[2, 1]],
+				argEnd = $commandCharsToTeX[[3, 1]]
+			}
+			,
+			StringJoin[
+				$commandCharsToTeX[[1, 1]], "mmaSubSupM",
+				argStart, "\\int", argEnd,
+				argStart, makeString[sub], argEnd,
+				argStart, makeString[sup], argEnd
+			]
+		]
+]
 
 
 (* ::Subsubsection:: *)
@@ -1721,15 +1724,15 @@ $boxesToFormattedTeX = {}
 
 
 $boxHeadsToTeXCommands = {
-	SubscriptBox -> {"mmaSub", 1},
-	SuperscriptBox -> {"mmaSup", 1},
-	SubsuperscriptBox -> {"mmaSubSup", 1},
-	UnderscriptBox -> {"mmaUnder", 1},
-	OverscriptBox -> {"mmaOver", 1},
-	UnderoverscriptBox -> {"mmaUnderOver", 1},
-	FractionBox -> "mmaFrac",
+	SubscriptBox -> {"mmaSub", 2},
+	SuperscriptBox -> {"mmaSup", 2},
+	SubsuperscriptBox -> {"mmaSubSup", 3},
+	UnderscriptBox -> {"mmaUnder", 2},
+	OverscriptBox -> {"mmaOver", 2},
+	UnderoverscriptBox -> {"mmaUnderOver", 3},
+	FractionBox -> {"mmaFrac", 2},
 	SqrtBox -> {"mmaSqrt", 1},
-	RadicalBox -> {"mmaRadical", 1}
+	RadicalBox -> {"mmaRadical", 2}
 }
 
 

@@ -80,7 +80,7 @@ Test[
 Test[
 	SubscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaSub{\\pi}{\\(\\pi\\)}"
+	"\\mmaSub{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "SubscriptBox: math mode"
 ]
@@ -99,11 +99,18 @@ Test[
 	,
 	TestID -> "SubscriptBox: with option"
 ]
+Test[
+	SubscriptBox["\[Integral]", "a"] // tmpBoxesToString
+	,
+	"\\mmaSubM{\\int}{a}"
+	,
+	TestID -> "SubscriptBox: \\[Integral]"
+]
 
 Test[
 	SuperscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaSup{\\pi}{\\(\\pi\\)}"
+	"\\mmaSup{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "SuperscriptBox: math mode"
 ]
@@ -124,11 +131,19 @@ Test[
 	,
 	TestID -> "SuperscriptBox: with options"
 ]
+Test[
+	SuperscriptBox["\[Integral]", "\[Pi]", DefaultBaseStyle -> {}] //
+		tmpBoxesToString
+	,
+	"\\mmaSupM{\\int}{\\(\\pi\\)}"
+	,
+	TestID -> "SuperscriptBox: \\[Integral]"
+]
 
 Test[
 	SubsuperscriptBox["\[Pi]", "\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaSubSup{\\pi}{\\(\\pi\\)}{\\(\\pi\\)}"
+	"\\mmaSubSup{\\(\\pi\\)}{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "SubsuperscriptBox: math mode"
 ]
@@ -152,11 +167,19 @@ Test[
 	,
 	TestID -> "SubsuperscriptBox: with option"
 ]
+Test[
+	SubsuperscriptBox["\[Integral]", "a", "\[Pi]"] //
+		tmpBoxesToString
+	,
+	"\\mmaSubSupM{\\int}{a}{\\(\\pi\\)}"
+	,
+	TestID -> "SubsuperscriptBox: \\[Integral]"
+]
 
 Test[
 	UnderscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaUnder{\\pi}{\\(\\pi\\)}"
+	"\\mmaUnder{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "UnderscriptBox: math mode"
 ]
@@ -173,7 +196,7 @@ Test[
 		DiacriticalPositioning -> Automatic, LimitsPositioning -> Automatic
 	] // tmpBoxesToString
 	,
-	"\\mmaUnder{\\alpha}{\\(\\beta\\)}"
+	"\\mmaUnder{\\(\\alpha\\)}{\\(\\beta\\)}"
 	,
 	TestID -> "UnderscriptBox: math mode, with options"
 ]
@@ -181,7 +204,7 @@ Test[
 Test[
 	OverscriptBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaOver{\\pi}{\\(\\pi\\)}"
+	"\\mmaOver{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "OverscriptBox: math mode"
 ]
@@ -205,7 +228,7 @@ Test[
 Test[
 	UnderoverscriptBox["\[Pi]", "\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaUnderOver{\\pi}{\\(\\pi\\)}{\\(\\pi\\)}"
+	"\\mmaUnderOver{\\(\\pi\\)}{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "UnderoverscriptBox: math mode"
 ]
@@ -225,7 +248,7 @@ Test[
 	UnderoverscriptBox["\[Delta]", "x", "\[Pi]", BaseStyle -> {}] //
 		tmpBoxesToString
 	,
-	"\\mmaUnderOver{\\delta}{x}{\\(\\pi\\)}"
+	"\\mmaUnderOver{\\(\\delta\\)}{x}{\\(\\pi\\)}"
 	,
 	TestID -> "UnderoverscriptBox: partial math mode, with option"
 ]
@@ -259,7 +282,7 @@ Test[
 Test[
 	SqrtBox["\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaSqrt{\\pi}"
+	"\\mmaSqrt{\\(\\pi\\)}"
 	,
 	TestID -> "SqrtBox: math mode"
 ]
@@ -281,7 +304,7 @@ Test[
 Test[
 	RadicalBox["\[Pi]", "\[Pi]"] // tmpBoxesToString
 	,
-	"\\mmaRadical{\\pi}{\\(\\pi\\)}"
+	"\\mmaRadical{\\(\\pi\\)}{\\(\\pi\\)}"
 	,
 	TestID -> "RadicalBox: math mode"
 ]

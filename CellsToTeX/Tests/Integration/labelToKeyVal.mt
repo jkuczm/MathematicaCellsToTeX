@@ -4,7 +4,7 @@
 (*SetUp*)
 
 
-BeginPackage["CellsToTeX`Tests`Unit`labelToKeyVal`", {"MUnit`"}]
+BeginPackage["CellsToTeX`Tests`Integration`labelToKeyVal`", {"MUnit`"}]
 
 
 Get["CellsToTeX`"]

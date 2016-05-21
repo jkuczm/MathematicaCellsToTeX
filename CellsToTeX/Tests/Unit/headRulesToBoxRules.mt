@@ -21,10 +21,10 @@ $ContextPath =
 
 Block[{$commandCharsToTeX = {"%" -> "%%", "<" -> "%<", ">" -> "%>"}},
 	TestMatch[
-		FractionBox -> "frac" // headRulesToBoxRules
+		FractionBox -> {"frac", 2} // headRulesToBoxRules
 		,
 		Verbatim[HoldPattern] @ FractionBox[
-			Verbatim[Pattern][pattName_, Verbatim[___]],
+			Verbatim[Pattern][pattName_, Verbatim @ Repeated[_, {2}]],
 			Verbatim[OptionsPattern[]]
 		] :>
 			"%frac" <> ("<" <> makeString[#] <> ">"& /@ {pattName_})
@@ -33,43 +33,20 @@ Block[{$commandCharsToTeX = {"%" -> "%%", "<" -> "%<", ">" -> "%>"}},
 	]
 ]
 	
-Block[{$commandCharsToTeX = {"A" -> "B", "C" -> "D", "E" -> "F"}},
-	TestMatch[
-		myBox -> {"myCommand", {{1}, {3}}} // headRulesToBoxRules
-		,
-		Verbatim[HoldPattern] @ myBox[
-			Verbatim[Pattern][pattName_, Verbatim[___]],
-			Verbatim[OptionsPattern[]]
-		] :>
-			"AmyCommand" <> (
-				"C" <> # <> "E"& /@ MapAt[
-					removeMathMode,
-					makeString /@ {pattName_},
-					{{1}, {3}}
-				]
-			)
-		,
-		TestID -> "Single rule: with math mode args positions"
-	]
-]
-	
 Block[{$commandCharsToTeX = {"|" -> "x", "(" -> "y", ")" -> "z"}},
 	TestMatch[
-		{SubscriptBox -> {"sub", 1}, UnderoverscriptBox -> "uo"} //
+		{SubscriptBox -> {"sub", 1}, UnderoverscriptBox -> {"uo", 3}} //
 			headRulesToBoxRules
 		,
 		{
 			Verbatim[HoldPattern] @ SubscriptBox[
-				Verbatim[Pattern][pattName1_, Verbatim[___]],
+				Verbatim[Pattern][pattName1_,  Verbatim @ Repeated[_, {1}]],
 				Verbatim[OptionsPattern[]]
 			] :>
-				"|sub" <> (
-					"(" <> # <> ")"& /@
-						MapAt[removeMathMode, makeString /@ {pattName1_}, 1]
-				)
+				"|sub" <> ("(" <> makeString[#] <> ")"& /@ {pattName1_})
 			,
 			Verbatim[HoldPattern] @ UnderoverscriptBox[
-				Verbatim[Pattern][pattName2_, Verbatim[___]],
+				Verbatim[Pattern][pattName2_,  Verbatim @ Repeated[_, {3}]],
 				Verbatim[OptionsPattern[]]
 			] :>
 				"|uo" <> ("(" <> makeString[#] <> ")"& /@ {pattName2_})
