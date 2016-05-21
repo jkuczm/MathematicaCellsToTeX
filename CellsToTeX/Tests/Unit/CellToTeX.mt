@@ -162,7 +162,7 @@ moduleWithMockedFunctions[{testContents},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Unsupported", "CellStyle"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
 					"MessageParameters" -> {
@@ -174,7 +174,8 @@ moduleWithMockedFunctions[{testContents},
 						HoldForm @ "CellStyle",
 						HoldForm @ "testUnsupportedCellStyle",
 						HoldForm @ "testCellStyle"
-					}
+					},
+					"Type" -> {"Unsupported", "CellStyle"}
 				]
 			],
 			CellsToTeXException["Unsupported", "CellStyle"]
@@ -530,7 +531,7 @@ moduleWithMockedFunctions[{testContents},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Missing", "CellStyle"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::missingCellStyle,
 					"MessageParameters" -> {
@@ -538,7 +539,8 @@ moduleWithMockedFunctions[{testContents},
 							CellToTeX[testContents, "Style" -> Automatic],
 						HoldForm @ CellsToTeXException["Missing", "CellStyle"],
 						HoldForm @ testContents
-					}
+					},
+					"Type" -> {"Missing", "CellStyle"}
 				]
 			],
 			CellsToTeXException["Missing", "CellStyle"]

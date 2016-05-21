@@ -110,7 +110,7 @@ Test[
 	]
 	,
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Missing", "Keys", "ProcessorArgument"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::missingProcArg,
 				"MessageParameters" -> {
@@ -121,7 +121,8 @@ Test[
 					HoldForm @ "Keys",
 					HoldForm @ {"Boxes"},
 					HoldForm @ {}
-				}
+				},
+				"Type" -> {"Missing", "Keys", "ProcessorArgument"}
 			]
 		],
 		CellsToTeXException["Missing", "Keys", "ProcessorArgument"]
@@ -141,7 +142,7 @@ Test[
 	]
 	,
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Invalid", "Boxes"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::invalid,
 				"MessageParameters" -> {
@@ -150,7 +151,8 @@ Test[
 					HoldForm @ CellsToTeXException["Invalid", "Boxes"],
 					HoldForm @ "Boxes",
 					HoldForm @ RowBox[{"f", "["}]
-				}
+				},
+				"Type" -> {"Invalid", "Boxes"}
 			]
 		],
 		CellsToTeXException["Invalid", "Boxes"]
@@ -173,7 +175,7 @@ Block[{FrontEndExecute = $Failed&},
 		]
 		,
 		HoldComplete @@ {
-			Failure[CellsToTeXException["Failed", "Parser"],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::failed,
 					"MessageParameters" -> {
@@ -184,7 +186,8 @@ Block[{FrontEndExecute = $Failed&},
 							FrontEnd`UndocumentedTestFEParserPacket[
 								"a^b", False
 							]
-					}
+					},
+					"Type" -> {"Failed", "Parser"}
 				]
 			],
 			CellsToTeXException["Failed", "Parser"]

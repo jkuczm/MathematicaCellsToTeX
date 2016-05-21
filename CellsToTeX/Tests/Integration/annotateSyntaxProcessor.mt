@@ -536,7 +536,7 @@ Test[
 	]
 	,
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Missing", "Keys", "ProcessorArgument"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::missingProcArg,
 				"MessageParameters" -> {
@@ -551,7 +551,8 @@ Test[
 						"CommonestTypesAsTeXOptions", "StringBoxToTypes",
 						"AnnotateComments"
 					}
-				}
+				},
+				"Type" -> {"Missing", "Keys", "ProcessorArgument"}
 			]
 		],
 		CellsToTeXException["Missing", "Keys", "ProcessorArgument"]
@@ -583,7 +584,7 @@ With[
 			]
 			,
 			HoldComplete @@ {
-				Failure[CellsToTeXException["Unsupported", "AnnotationType"],
+				Failure[CellsToTeXException,
 					Association[
 						"MessageTemplate" :> CellsToTeXException::unsupported,
 						"MessageParameters" -> {
@@ -594,7 +595,8 @@ With[
 							HoldForm @ "AnnotationType",
 							HoldForm @ "UndefinedSymbol",
 							HoldForm @ {"testSupportedAnnotation"}
-						}
+						},
+						"Type" -> {"Unsupported", "AnnotationType"}
 					]
 				],
 				CellsToTeXException["Unsupported", "AnnotationType"]
@@ -625,10 +627,7 @@ With[
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException[
-					"Unsupported", "OptionValue", "CommonestTypesAsTeXOptions"
-				],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
 					"MessageParameters" -> {
@@ -640,6 +639,10 @@ With[
 						HoldForm @ "OptionValue",
 						HoldForm @ "testUnsupportedOptVal",
 						HoldForm @ {True, "ASCII", False}
+					},
+					"Type" -> {
+						"Unsupported", "OptionValue",
+						"CommonestTypesAsTeXOptions"
 					}
 				]
 			],

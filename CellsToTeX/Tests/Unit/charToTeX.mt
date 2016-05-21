@@ -9,7 +9,8 @@ BeginPackage["CellsToTeX`Tests`Unit`charToTeX`", {"MUnit`"}]
 
 Get["CellsToTeX`"]
 
-PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
+$ContextPath =
+	Join[{"CellsToTeX`Configuration`", "CellsToTeX`Backports`"}, $ContextPath]
 
 
 (* ::Section:: *)
@@ -83,8 +84,7 @@ Module[{unsupportedFontWeight},
 		]
 		,
 		HoldComplete @@ {
-			Failure[
-				CellsToTeXException["Unsupported", "OptionValue", FontWeight],
+			Failure[CellsToTeXException,
 				Association[
 					"MessageTemplate" :> CellsToTeXException::unsupported,
 					"MessageParameters" -> {
@@ -97,7 +97,8 @@ Module[{unsupportedFontWeight},
 						HoldForm @ "OptionValue",
 						HoldForm @ unsupportedFontWeight,
 						HoldForm @ {Plain, Bold}
-					}
+					},
+					"Type" -> {"Unsupported", "OptionValue", FontWeight}
 				]
 			],
 			CellsToTeXException["Unsupported", "OptionValue", FontWeight]

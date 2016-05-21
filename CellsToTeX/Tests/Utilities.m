@@ -67,14 +67,15 @@ SetAttributes[expectedIncorrectArgsError, HoldAllComplete]
 
 expectedIncorrectArgsError[functionCall_] :=
 	HoldComplete @@ {
-		Failure[CellsToTeXException["Error", "IncorrectArguments"],
+		Failure[CellsToTeXException,
 			Association[
 				"MessageTemplate" :> CellsToTeXException::error,
 				"MessageParameters" -> {
 					HoldForm @ functionCall,
 					HoldForm @
 						CellsToTeXException["Error", "IncorrectArguments"]
-				}
+				},
+				"Type" -> {"Error", "IncorrectArguments"}
 			]
 		],
 		CellsToTeXException["Error", "IncorrectArguments"]
