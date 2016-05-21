@@ -59,14 +59,6 @@ Test[
 ]
 
 Test[
-	formatToExtension["jPg"]
-	,
-	".jpg"
-	,
-	TestID -> "non-canonical: jPg"
-]
-
-Test[
 	formatToExtension["unknown export format"]
 	,
 	""

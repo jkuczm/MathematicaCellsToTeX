@@ -1562,35 +1562,23 @@ prettifyPatterns[expr_] :=
 (*formatToExtension*)
 
 
-formatToExtension[format_] :=
-	With[
-		{
-			formatAlt =
-				System`ConvertersDump`CaseInsensitiveReplace[
-					format, System`ConvertersDump`$formatMappings
-				]
-		},
-		Replace[
-			Cases[
-				System`ConvertersDump`$extensionMappings
-				,
-				Rule[
-					ext_,
-					str_String /;
-						StringMatchQ[
-							str, format | formatAlt, IgnoreCase -> True
-						]
-				] :>
-					StringDrop[ext, 1]
-				,
-				{1}
-				,
-				1
-			]
-			,
-			{{ext_} :> ext, {} -> ""}
+formatToExtension[_String] = ""
+
+Scan[
+	(formatToExtension[Last[#]] =
+		StringDrop[First[#], 1]) &
+	,
+	GatherBy[System`ConvertersDump`$extensionMappings, Last][[All, 1]]
+]
+Scan[
+	With[{ext = formatToExtension[Last[#]]},
+		If[ext =!= "",
+			formatToExtension[First[#]] = ext
 		]
-	]
+	] &
+	,
+	System`ConvertersDump`$formatMappings
+]
 
 
 (* ::Subsubsection:: *)
