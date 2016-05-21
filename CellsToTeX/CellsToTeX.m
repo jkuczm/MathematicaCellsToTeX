@@ -343,13 +343,6 @@ Begin["`Internal`"]
 ClearAll["`*"]
 
 
-$whitespace::usage =
-"\
-$whitespace \
-represents a sequence of whitespace characters, including IndentingNewLine, \
-in StringExpression."
-
-
 throwException::usage =
 "\
 throwException[thrownBy, {errType, errSubtype, ...}, {val1, val2, ...}] or \
@@ -875,19 +868,6 @@ Protect @ Evaluate @ Names[
 
 addIncorrectArgsDefinition /@
 	Names["CellsToTeX`Internal`" ~~ Except["$"] ~~ Except["`"]...]
-
-
-(* ::Subsubsection:: *)
-(*$whitespace*)
-
-
-(* Whitespace didn't match IndentingNewLine before Mathematica v10.1. *)
-$whitespace =
-	If[StringMatchQ["\[IndentingNewLine]", Whitespace],
-		Whitespace
-	(* else *),
-		(WhitespaceCharacter | "\[IndentingNewLine]")..
-	]
 
 
 (* ::Subsubsection:: *)
@@ -1632,6 +1612,10 @@ $cellStyleOptions = {
 	{"Code", "StringRules"} -> {},
 	{"Input" | "Output" | "Print" | "Message", "StringRules"} :>
 		Join[$stringsToTeX, $commandCharsToTeX],
+	{"Code", "NonASCIIHandler"} -> Identity,
+	{"Input", "NonASCIIHandler"} -> (charToTeX[#, FontWeight -> Bold]&),
+	{"Output" | "Print" | "Message", "NonASCIIHandler"} ->
+		(charToTeX[#, FontWeight -> Plain]&),
 	{"Code", "CharacterEncoding"} -> "ASCII",
 	{"Input" | "Output" | "Print" | "Message", "CharacterEncoding"} ->
 		"Unicode",
@@ -1742,10 +1726,8 @@ $boxHeadsToTeXCommands = {
 
 
 $stringsToTeX = {
+	"\[LeftSkeleton]" -> "<<",
 	"\[RightSkeleton]" -> ">>"
-	,
-	char_ /; First@ToCharacterCode[char] > 126 :>
-		charToTeX[char]
 }
 
 If[$VersionNumber >=10,
@@ -1853,27 +1835,49 @@ defaultAnnotationType[_Symbol | _String] := "UndefinedSymbol"
 (*charToTeX*)
 
 
-charToTeX[char_] :=
-	StringReplace[
-		StringJoin @ Replace[
-			System`Convert`TeXFormDump`TextExceptions @
-				System`Convert`TeXFormDump`TeXCharacters[char]
-			,
-			{"$", texStr_, "$"} :>
-				If[StringFreeQ[texStr, "\\"],
-					texStr
-				(* else *),
-					{"\\(", texStr, "\\)"}
-				]
-		]
+Options[charToTeX] = {FontWeight -> Plain}
+
+
+functionCall:charToTeX[char_, OptionsPattern[]] :=
+	With[
+		{
+			styleWrapper =
+				Replace[OptionValue[FontWeight], {
+					Plain -> Identity,
+					Bold -> ({"\\pmb{", # , "}"} &),
+					_ :>
+						throwException[functionCall,
+							{"Unsupported", "OptionValue", FontWeight},
+							{OptionValue[FontWeight], {Plain, Bold}}
+						]
+				}]
+		}
 		,
-		With[{escChar = $commandCharsToTeX[[1, 1]]},
-			{
-				" " -> "",
-				"\\{" -> escChar <> "{", "{" -> $commandCharsToTeX[[2, 1]],
-				"\\}" -> escChar <> "}", "}" -> $commandCharsToTeX[[3, 1]],
-				"\\\\" -> "\\\\", "\\" -> escChar
-			}
+		StringReplace[
+			StringJoin @ Replace[
+				System`Convert`TeXFormDump`TextExceptions @
+					System`Convert`TeXFormDump`TeXCharacters[char]
+				,
+				{
+					{"$", texStr_, "$"} :>
+						If[StringFreeQ[texStr, "\\"],
+							texStr
+						(* else *),
+							{"\\(", styleWrapper[texStr], "\\)"}
+						],
+					texStr_String /; !StringFreeQ[texStr, "\\"] :>
+						styleWrapper[texStr]
+				}
+			]
+			,
+			With[{escChar = $commandCharsToTeX[[1, 1]]},
+				{
+					" " -> "",
+					"\\{" -> escChar <> "{", "{" -> $commandCharsToTeX[[2, 1]],
+					"\\}" -> escChar <> "}", "}" -> $commandCharsToTeX[[3, 1]],
+					"\\\\" -> "\\\\", "\\" -> escChar
+				}
+			]
 		]
 	]
 
@@ -2195,26 +2199,42 @@ functionCall:messageLinkProcessor[data:{___?OptionQ}] :=
 (*mmaCellProcessor*)
 
 
-Options[mmaCellProcessor] =
-	{"BoxRules" -> {}, "StringRules" -> {}, "Indentation" -> "  "}
+Options[mmaCellProcessor] = {
+	"BoxRules" -> {},
+	"StringRules" -> {},
+	"NonASCIIHandler" -> Identity,
+	"Indentation" -> "  "
+}
 
 
 functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 	Module[
 		{
-			boxes, boxRules, style, texOptions, stringRules, indentation,
-			texCode
+			boxes, boxRules, style, texOptions, stringRules, nonASCIIHandler,
+			indentation, texCode
 		},
-		{boxes, style, texOptions, boxRules, stringRules, indentation} =
+		{
+			boxes, style, texOptions, boxRules, stringRules, nonASCIIHandler,
+			indentation
+		} =
 			processorDataLookup[functionCall,
 				{data, Options[mmaCellProcessor]},
 				{
 					"Boxes", "Style", "TeXOptions",
-					"BoxRules", "StringRules", "Indentation"
+					"BoxRules", "StringRules", "NonASCIIHandler", "Indentation"
 				}
 			];
 		boxes = Replace[boxes, Cell[contents_, ___] :> contents];
 		boxes = Replace[boxes, BoxData[b_] :> b];
+		
+		If[nonASCIIHandler =!= Identity,
+			With[{nonASCIIHandler = nonASCIIHandler},
+				AppendTo[stringRules,
+					char:RegularExpression["[^[:ascii:]]"] :>
+						nonASCIIHandler[char]
+				]
+			]
+		];
 		
 		boxRules = Join[
 			boxRules,
@@ -2254,7 +2274,7 @@ functionCall:mmaCellProcessor[data:{___?OptionQ}] :=
 					StringJoin["\n", texCode],
 					StringExpression[
 						$commandCharsToTeX[[1, 1]] <> ")",
-						ws:$whitespace,
+						ws:(" " | "\t")...,
 						$commandCharsToTeX[[1, 1]] <> "("
 					] :>
 						ws

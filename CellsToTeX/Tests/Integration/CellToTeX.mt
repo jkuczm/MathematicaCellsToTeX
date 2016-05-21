@@ -52,7 +52,7 @@ Test[
 	,
 	"\
 \\begin{mmaCell}[morelst={morefvcmdparams=\\mathbbm 1},morefunctionlocal={y}]{Input}
-  \\mmaSubSupM{\\int}{r}{\\(\\infty\\)}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
+  \\mmaSubSupM{\\int}{r}{\\(\\pmb{\\infty}\\)}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
 \\end{mmaCell}"
 	,
 	TestID -> "pure boxes: formatting, syntax: Input"
@@ -90,7 +90,7 @@ Block[{\[Phi]1},
 		,
 		"\
 \\begin{mmaCell}{Input}
-  \\mmaUnderOver{\\(\\sum\\)}{\\mmaFnc{\\(\\alpha\\)}=1}{\\(\\pi\\)}(\\mmaSup{\\mmaDef{\\(\\phi\\)1}[\\mmaFnc{\\(\\alpha\\)}]}{2}+\\mmaUnd{\\(\\chi\\omega\\nu\\sigma\\tau\\)})
+  \\mmaUnderOver{\\(\\pmb{\\sum}\\)}{\\mmaFnc{\\(\\pmb{\\alpha}\\)}=1}{\\(\\pmb{\\pi}\\)}(\\mmaSup{\\mmaDef{\\(\\pmb{\\phi}\\)1}[\\mmaFnc{\\(\\pmb{\\alpha}\\)}]}{2}+\\mmaUnd{\\(\\pmb{\\chi\\omega\\nu\\sigma\\tau}\\)})
 \\end{mmaCell}"
 		,
 		TestID -> "pure boxes: formatting, syntax, non-ASCII symbols: Input"
@@ -174,7 +174,7 @@ Test[
 	,
 	"\
 \\begin{mmaCell}{Input}
-  \\mmaSub{x}{1}==\\mmaFrac{-b\\(\\pm\\)\\mmaSqrt{\\mmaSup{b}{2}-4 a c}}{2 a}
+  \\mmaSub{x}{1}==\\mmaFrac{-b\\(\\pmb{\\pm}\\)\\mmaSqrt{\\mmaSup{b}{2}-4 a c}}{2 a}
 \\end{mmaCell}"
 	,
 	TestID -> "Input cell: formatting, no syntax"
@@ -608,8 +608,8 @@ With[
 		},
 		dataKeys = {
 			"Boxes", "Style", "Processor", "BoxRules", "StringRules",
-			"CharacterEncoding", "FormatType", "Indexed", "Intype",
-			"CellLabel", "SupportedCellStyles", "CellStyleOptions",
+			"NonASCIIHandler", "CharacterEncoding", "FormatType", "Indexed",
+			"Intype", "CellLabel", "SupportedCellStyles", "CellStyleOptions",
 			"ProcessorOptions", "TeXOptions", "CatchExceptions",
 			"CurrentCellIndex", "PreviousIntype"
 		}
@@ -653,8 +653,8 @@ With[
 	{
 		dataKeys = {
 			"Boxes", "Style", "Processor", "BoxRules", "StringRules",
-			"CharacterEncoding", "FormatType", "Indexed", "Intype",
-			"CellLabel", "SupportedCellStyles", "CellStyleOptions",
+			"NonASCIIHandler", "CharacterEncoding", "FormatType", "Indexed",
+			"Intype", "CellLabel", "SupportedCellStyles", "CellStyleOptions",
 			"ProcessorOptions", "TeXOptions", "CatchExceptions",
 			"CurrentCellIndex", "PreviousIntype"
 		}
