@@ -13,6 +13,7 @@ TestSuite[{
 	"Unit/getBoxesToFormattedTeX.mt",
 	"Unit/charToTeX.mt",
 	"Unit/defaultAnnotationType.mt",
+	"Unit/defaultOrFirst.mt",
 	"Unit/commonestAnnotationTypes.mt",
 	"Unit/annotationTypesToKeyVal.mt",
 	"Unit/labelToCellData.mt",

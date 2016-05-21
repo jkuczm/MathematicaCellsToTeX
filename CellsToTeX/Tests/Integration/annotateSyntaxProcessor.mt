@@ -227,7 +227,7 @@ With[
 
 
 (* ::Subsection:: *)
-(*Complex*)
+(*CommonestTypesAsTeXOptions option*)
 
 
 With[
@@ -235,7 +235,8 @@ With[
 		data = {
 			"Boxes" -> MakeBoxes[f[x_] := x y],
 			"BoxRules" -> {},
-			"TeXOptions" -> {}
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> True
 		}
 	},
 	Test[
@@ -244,11 +245,162 @@ With[
 		{
 			"Boxes" -> MakeBoxes[f[x_] := x y],
 			"BoxRules" -> {$syntaxBoxToTeXSeq},
-			"TeXOptions" -> {"morepattern" -> {"x", "x_"}},
+			"TeXOptions" -> {"morepattern" -> {"x_", "x"}},
 			data
 		}
 		,
-		TestID -> "2 symbols + pattern: function delayed definition"
+		TestID -> "CommonestTypesAsTeXOptions -> True: ASCII symbols"
+	]
+]
+With[
+	{
+		data = {
+			"Boxes" ->
+				MakeBoxes[\[Phi][\[Epsilon]_] := \[Epsilon] \[Epsilon]0],
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> True
+		}
+	},
+	Test[
+		data // annotateSyntaxProcessor
+		,
+		{
+			"Boxes" ->
+				MakeBoxes[\[Phi][\[Epsilon]_] := \[Epsilon] \[Epsilon]0],
+			"BoxRules" -> {$syntaxBoxToTeXSeq},
+			"TeXOptions" -> {"morepattern" -> {"\[Epsilon]_", "\[Epsilon]"}},
+			data
+		}
+		,
+		TestID -> "CommonestTypesAsTeXOptions -> True: non-ASCII symbols"
+	]
+]
+
+
+With[
+	{
+		data = {
+			"Boxes" -> MakeBoxes[f[x_] := x y],
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> "ASCII"
+		}
+	},
+	Test[
+		data // annotateSyntaxProcessor
+		,
+		{
+			"Boxes" -> MakeBoxes[f[x_] := x y],
+			"BoxRules" -> {$syntaxBoxToTeXSeq},
+			"TeXOptions" -> {"morepattern" -> {"x_", "x"}},
+			data
+		}
+		,
+		TestID -> "CommonestTypesAsTeXOptions -> ASCII: ASCII symbols"
+	]
+]
+With[
+	{
+		data = {
+			"Boxes" ->
+				MakeBoxes[\[Phi][\[Epsilon]_] := \[Epsilon] \[Epsilon]0],
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> "ASCII"
+		}
+	},
+	Test[
+		data // annotateSyntaxProcessor
+		,
+		{
+			"Boxes" ->
+				RowBox[{
+					RowBox[{SyntaxBox["\[Phi]", "UndefinedSymbol"], "[",
+						SyntaxBox["\[Epsilon]_", "PatternVariable"],
+					"]"}],
+					":=",
+					RowBox[{
+						SyntaxBox["\[Epsilon]", "PatternVariable"],
+						" ",
+						SyntaxBox["\[Epsilon]0", "UndefinedSymbol"]
+					}]
+				}],
+			"BoxRules" -> {$syntaxBoxToTeXSeq},
+			"TeXOptions" -> {},
+			data
+		}
+		,
+		TestID -> "CommonestTypesAsTeXOptions -> ASCII: non-ASCII symbols"
+	]
+]
+
+
+With[
+	{
+		data = {
+			"Boxes" -> MakeBoxes[f[x_] := x y],
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> False
+		}
+	},
+	Test[
+		data // annotateSyntaxProcessor
+		,
+		{
+			"Boxes" ->
+				RowBox[{
+					RowBox[{SyntaxBox["f", "UndefinedSymbol"], "[",
+						SyntaxBox["x_", "PatternVariable"],
+					"]"}],
+					":=",
+					RowBox[{
+						SyntaxBox["x", "PatternVariable"],
+						" ",
+						SyntaxBox["y", "UndefinedSymbol"]
+					}]
+				}],
+			"BoxRules" -> {$syntaxBoxToTeXSeq},
+			"TeXOptions" -> {},
+			data
+		}
+		,
+		TestID -> "CommonestTypesAsTeXOptions -> False: ASCII symbols"
+	]
+]
+With[
+	{
+		data = {
+			"Boxes" ->
+				MakeBoxes[\[Phi][\[Epsilon]_] := \[Epsilon] \[Epsilon]0],
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> False
+		}
+	},
+	Test[
+		data // annotateSyntaxProcessor
+		,
+		{
+			"Boxes" ->
+				RowBox[{
+					RowBox[{SyntaxBox["\[Phi]", "UndefinedSymbol"], "[",
+						SyntaxBox["\[Epsilon]_", "PatternVariable"],
+					"]"}],
+					":=",
+					RowBox[{
+						SyntaxBox["\[Epsilon]", "PatternVariable"],
+						" ",
+						SyntaxBox["\[Epsilon]0", "UndefinedSymbol"]
+					}]
+				}],
+			"BoxRules" -> {$syntaxBoxToTeXSeq},
+			"TeXOptions" -> {},
+			data
+		}
+		,
+		TestID -> "CommonestTypesAsTeXOptions -> False: non-ASCII symbols"
 	]
 ]
 
@@ -396,7 +548,8 @@ Test[
 					HoldForm @ {"Boxes", "TeXOptions"},
 					HoldForm @ {
 						"BoxRules", "AnnotationTypesToTeX",
-						"AnnotationTypesNormalizer"
+						"AnnotationTypesNormalizer",
+						"CommonestTypesAsTeXOptions", "BoxesToAnnotationTypes"
 					}
 				}
 			]
@@ -449,6 +602,54 @@ With[
 			,
 			TestID -> "Exception: Unsupported AnnotationType"
 		]
+	]
+]
+
+
+With[
+	{
+		data = {
+			"Boxes" -> "testUndefinedSymbol",
+			"BoxRules" -> {},
+			"TeXOptions" -> {},
+			"CommonestTypesAsTeXOptions" -> "testUnsupportedOptVal"
+		}
+	},
+	Test[
+		Catch[
+			data // annotateSyntaxProcessor;
+			,
+			_
+			,
+			HoldComplete
+		]
+		,
+		HoldComplete @@ {
+			Failure[
+				CellsToTeXException[
+					"Unsupported", "OptionValue", "CommonestTypesAsTeXOptions"
+				],
+				Association[
+					"MessageTemplate" :> CellsToTeXException::unsupported,
+					"MessageParameters" -> {
+						HoldForm @ annotateSyntaxProcessor[data],
+						HoldForm @ CellsToTeXException[
+							"Unsupported", "OptionValue",
+							"CommonestTypesAsTeXOptions"
+						],
+						HoldForm @ "OptionValue",
+						HoldForm @ "testUnsupportedOptVal",
+						HoldForm @ {True, "ASCII", False}
+					}
+				]
+			],
+			CellsToTeXException[
+				"Unsupported", "OptionValue", "CommonestTypesAsTeXOptions"
+			]
+		}
+		,
+		TestID ->
+			"Exception: Unsupported OptionValue CommonestTypesAsTeXOptions"
 	]
 ]
 
