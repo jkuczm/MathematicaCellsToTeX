@@ -4,7 +4,7 @@ TestSuite[{
 	"Lookup.mt",
 	"$linearBoxesToTeX.mt",
 	"$cellStyleOptions.mt",
-	"getBoxesToFormattedTeX.mt",
+	"boxesToString.mt",
 	"labelToKeyVal.mt",
 	"processorDataLookup.mt",
 	"extractCellOptionsProcessor.mt",

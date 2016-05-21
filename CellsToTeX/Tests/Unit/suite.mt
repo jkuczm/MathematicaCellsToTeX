@@ -1,4 +1,5 @@
 TestSuite[{
+	"$whitespace.mt",
 	"addIncorrectArgsDefinition.mt",
 	"throwException.mt",
 	"handleException.mt",
@@ -10,7 +11,6 @@ TestSuite[{
 	"boxesToInputFormBoxes.mt",
 	"boxesToString.mt",
 	"headRulesToBoxRules.mt",
-	"getBoxesToFormattedTeX.mt",
 	"charToTeX.mt",
 	"defaultAnnotationType.mt",
 	"defaultOrFirst.mt",

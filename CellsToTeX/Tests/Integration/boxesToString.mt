@@ -5,7 +5,7 @@
 
 
 BeginPackage[
-	"CellsToTeX`Tests`Integration`getBoxesToFormattedTeX`", {"MUnit`"}
+	"CellsToTeX`Tests`Integration`boxesToString`", {"MUnit`"}
 ]
 
 
@@ -14,7 +14,20 @@ Get["CellsToTeX`"]
 PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
 
 
-With[{boxRules = getBoxesToFormattedTeX[]},
+With[
+	{
+		boxRules =
+			Join[
+				$linearBoxesToTeX,
+				$boxesToFormattedTeX,
+				headRulesToBoxRules[$boxHeadsToTeXCommands],
+				{str_String :>
+					StringReplace[makeStringDefault[str],
+						Join[$stringsToTeX, $commandCharsToTeX]
+					]}
+			]
+	}
+	,
 	tmpBoxesToString =
 		CellsToTeX`Internal`boxesToString[
 			#, boxRules, FormatType -> InputForm
@@ -72,9 +85,10 @@ Test[
 
 Block[{$commandCharsToTeX = {"&" -> "test1", "[" -> "test2", "]" -> "test3"}},
 	Test[
-		"\[Alpha]\[Beta]\[Gamma]" // tmpBoxesToString
+		"\[Alpha] \t\[Beta] \[IndentingNewLine] \[Gamma]" // tmpBoxesToString
 		,
-		"&(&alpha&beta&gamma&)"
+		"&(&alpha&) \t&(&beta&) 
+ &(&gamma&)"
 		,
 		TestID -> "\\[Alpha]\\[Beta]\\[Gamma]"
 	]

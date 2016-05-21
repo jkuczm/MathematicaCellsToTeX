@@ -40,15 +40,11 @@ Test[
 			MakeBoxes,
 		"Style" -> "Input",
 		"ProcessorOptions" -> {
-			"BoxRules" ->
-				getBoxesToFormattedTeX[
-					"CharacterRules" ->
-						Prepend[
-							OptionValue[
-								getBoxesToFormattedTeX, "CharacterRules"
-							],
-							"\[DifferentialD]" -> "\\(\\mathbbm{d}\\)"
-						]
+			"StringRules" ->
+				Join[
+					{"\[DifferentialD]" -> "\\(\\mathbbm{d}\\)"},
+					$stringsToTeX,
+					$commandCharsToTeX
 				]
 		},
 		"TeXOptions" -> {"morelst" -> "{morefvcmdparams=\\mathbbm 1}"}
@@ -355,7 +351,13 @@ With[
 	{
 		data = {
 			"Boxes" -> Cell["contents", "Input"],
-			"BoxRules" -> Join[annotationBoxRules, getBoxesToFormattedTeX[]],
+			"BoxRules" ->
+				Join[
+					annotationBoxRules,
+					$linearBoxesToTeX,
+					$boxesToFormattedTeX,
+					headRulesToBoxRules[$boxHeadsToTeXCommands]
+				],
 			"TeXOptions" -> {},
 			{
 				"TeXOptions" -> {},
@@ -605,11 +607,11 @@ With[
 			Options[CellToTeX]
 		},
 		dataKeys = {
-			"Boxes", "Style", "Processor", "BoxRules", "CharacterEncoding",
-			"FormatType", "Indexed", "Intype", "CellLabel",
-			"SupportedCellStyles", "CellStyleOptions", "ProcessorOptions",
-			"TeXOptions", "CatchExceptions", "CurrentCellIndex",
-			"PreviousIntype"
+			"Boxes", "Style", "Processor", "BoxRules", "StringRules",
+			"CharacterEncoding", "FormatType", "Indexed", "Intype",
+			"CellLabel", "SupportedCellStyles", "CellStyleOptions",
+			"ProcessorOptions", "TeXOptions", "CatchExceptions",
+			"CurrentCellIndex", "PreviousIntype"
 		}
 	}
 	,
@@ -650,11 +652,11 @@ With[
 With[
 	{
 		dataKeys = {
-			"Boxes", "Style", "Processor", "BoxRules", "CharacterEncoding",
-			"FormatType", "Indexed", "Intype", "CellLabel",
-			"SupportedCellStyles", "CellStyleOptions", "ProcessorOptions",
-			"TeXOptions", "CatchExceptions", "CurrentCellIndex",
-			"PreviousIntype"
+			"Boxes", "Style", "Processor", "BoxRules", "StringRules",
+			"CharacterEncoding", "FormatType", "Indexed", "Intype",
+			"CellLabel", "SupportedCellStyles", "CellStyleOptions",
+			"ProcessorOptions", "TeXOptions", "CatchExceptions",
+			"CurrentCellIndex", "PreviousIntype"
 		}
 	}
 	,

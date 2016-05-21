@@ -1,4 +1,5 @@
 TestSuite[{
+	"Unit/$whitespace.mt",
 	"Unit/addIncorrectArgsDefinition.mt",
 	"Unit/throwException.mt",
 	"Unit/handleException.mt",
@@ -10,7 +11,6 @@ TestSuite[{
 	"Unit/boxesToInputFormBoxes.mt",
 	"Unit/boxesToString.mt",
 	"Unit/headRulesToBoxRules.mt",
-	"Unit/getBoxesToFormattedTeX.mt",
 	"Unit/charToTeX.mt",
 	"Unit/defaultAnnotationType.mt",
 	"Unit/defaultOrFirst.mt",
@@ -37,7 +37,7 @@ TestSuite[{
 	"Integration/Lookup.mt",
 	"Integration/$linearBoxesToTeX.mt",
 	"Integration/$cellStyleOptions.mt",
-	"Integration/getBoxesToFormattedTeX.mt",
+	"Integration/boxesToString.mt",
 	"Integration/labelToKeyVal.mt",
 	"Integration/processorDataLookup.mt",
 	"Integration/extractCellOptionsProcessor.mt",

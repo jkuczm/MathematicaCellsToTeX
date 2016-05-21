@@ -30,6 +30,8 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 				,
 				$basicBoxes, testBasicBoxes
 				,
+				$commandCharsToTeX = $commandCharsToTeX
+				,
 				testDefaultBoxRuleLHS, testDefaultBoxRuleRHS
 				,
 				testData, testExtendedBoxRules,
@@ -47,6 +49,8 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 					lookedupBoxes, "testLookedupStyle",
 					{testLookedupTeXOption},
 					{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
+					{"testLookedupStringRuleLHS" ->
+						"testLookedupStringRuleRHS"},
 					"testLookedupIndentation"
 				}
 			];
@@ -68,12 +72,15 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 			
 			SetOptions[mmaCellProcessor,
 				"BoxRules" -> {testDefaultBoxRuleLHS -> testDefaultBoxRuleRHS},
+				"StringRules" ->
+					{"testDefaultStringRuleLHS" -> "testDefaultStringRuleRHS"},
 				"Indentation" -> "testDefaultIndentation"
 			];
 			testData = {
 				"Boxes" -> testBoxes,
 				"Style" -> testStyle,
 				"BoxRules" -> {testBox -> testConvertedBox},
+				"StringRules" -> {"testString" -> "testConvertedString"},
 				"TeXOptions" -> testTeXOptions,
 				"Indentation" -> testIndentation,
 				"FormatType" -> testFormatTypeValue,
@@ -83,15 +90,22 @@ moduleWithMockedFunctions[vars_List, lookedupBoxes_, body_] :=
 			};
 			testExtendedBoxRules = {
 				testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS,
+				HoldPattern[
+					Verbatim[Pattern][pattName1_, Verbatim[Blank][String]] :>
+						StringReplace[makeStringDefault[pattName1_], {
+							"testLookedupStringRuleLHS" ->
+								"testLookedupStringRuleRHS"
+						}]
+				],
 				With[{testData = testData},
 					HoldPattern[
 						Verbatim[Pattern][
-							pattName_, Verbatim[Except][testBasicBoxes]
+							pattName2_, Verbatim[Except][testBasicBoxes]
 						] :>
 							CellsToTeX`Internal`throwException[
 								mmaCellProcessor[testData],
 								{"Unsupported", "Box"},
-								{pattName_, {testLookedupBoxRuleLHS}}
+								{pattName2_, {testLookedupBoxRuleLHS}}
 							]
 					]
 				]
@@ -139,10 +153,16 @@ testLookedupIndentationtestBoxesToStringResult1
 					{
 						"BoxRules" ->
 							{testDefaultBoxRuleLHS -> testDefaultBoxRuleRHS},
+						"StringRules" ->
+							{"testDefaultStringRuleLHS" ->
+								"testDefaultStringRuleRHS"},
 						"Indentation" -> "testDefaultIndentation"
 					}
 				},
-				{"Boxes", "Style", "TeXOptions", "BoxRules", "Indentation"}
+				{
+					"Boxes", "Style", "TeXOptions", "BoxRules", "StringRules",
+					"Indentation"
+				}
 			]}
 		]
 		,
@@ -312,6 +332,74 @@ testLookedupIndentationtestBoxesToStringResult1
 		{HoldComplete["[", {testLookedupTeXOption}, "]"]}
 		,
 		TestID -> "Cell: optionsToTeX"
+	]
+]
+
+
+moduleWithMockedFunctions[
+	{testLookedupBoxes}
+	,
+	testLookedupBoxes
+	,
+	mockFunction[
+		processorDataLookup,
+		$processorDataLookupLog,
+		{
+			lookedupBoxes, "testLookedupStyle",
+			{testLookedupTeXOption},
+			{testLookedupBoxRuleLHS -> testLookedupBoxRuleRHS},
+			{} (* Empty StringRules. *),
+			"testLookedupIndentation"
+		}
+	];
+	
+	TestMatch[
+		mmaCellProcessor[testData]
+		,
+		{
+			"TeXCode" -> "\
+\\begin{mmaCell}[testOptionsToTeXResult1]{testLookedupStyle}
+testLookedupIndentationtestBoxesToStringResult1
+\\end{mmaCell}"
+			,
+			(* For empty StringRules no string related box rule is created. *)
+			"BoxRules" -> Delete[testExtendedBoxRules, 2],
+			testData
+		}
+		,
+		TestID -> "empty StringRules: returned value"
+	]
+]
+
+
+moduleWithMockedFunctions[
+	{testLookedupBoxes}
+	,
+	testLookedupBoxes
+	,
+	$commandCharsToTeX = {"$" -> "test1", ":" -> "test2", ";" -> "test3"};
+	mockFunction[
+		CellsToTeX`Internal`boxesToString,
+		$boxesToStringLog,
+		"$($alpha$) \t$($beta$)\[IndentingNewLine] $($gamma$)\\(a\\)\\(b\\)"
+	];
+	
+	TestMatch[
+		mmaCellProcessor[testData]
+		,
+		{
+			"TeXCode" -> "\
+\\begin{mmaCell}[testOptionsToTeXResult1]{testLookedupStyle}
+testLookedupIndentation$($alpha \t$beta
+testLookedupIndentation $gamma$)\\(a\\)\\(b\\)
+\\end{mmaCell}"
+			,
+			(* For empty StringRules no string related box rule is created. *)
+			"BoxRules" -> testExtendedBoxRules,
+			testData
+		}
+		,
+		TestID -> "adjacent math modes: returned value"
 	]
 ]
 
