@@ -174,8 +174,7 @@ Test[
 				cell : Cell[_, __] :>
 					CellToTeX[cell, "ProcessorOptions" -> {
 						"CommonestTypesAsTeXOptions" -> False,
-						"BoxesToAnnotationTypes" ->
-							SyntaxAnnotations`$BoxesToAnnotationTypes,
+						"StringBoxToTypes" -> {Automatic},
 						"NonASCIIHandler" -> Identity
 					}]
 				,

@@ -24,7 +24,7 @@ $ContextPath =
 
 
 MakeBoxes[syntaxExpr[expr_, types___], StandardForm] ^:=
-	SyntaxBox[MakeBoxes[expr], types]
+	syntaxBox[MakeBoxes[expr], types]
 
 $syntaxBoxToTeXSeq =
 	Sequence @@ annotationRulesToBoxRules[$annotationTypesToTeX]
@@ -316,14 +316,14 @@ With[
 		{
 			"Boxes" ->
 				RowBox[{
-					RowBox[{SyntaxBox["\[Phi]", "UndefinedSymbol"], "[",
-						SyntaxBox["\[Epsilon]_", "PatternVariable"],
+					RowBox[{syntaxBox["\[Phi]", "UndefinedSymbol"], "[",
+						syntaxBox["\[Epsilon]_", "PatternVariable"],
 					"]"}],
 					":=",
 					RowBox[{
-						SyntaxBox["\[Epsilon]", "PatternVariable"],
+						syntaxBox["\[Epsilon]", "PatternVariable"],
 						" ",
-						SyntaxBox["\[Epsilon]0", "UndefinedSymbol"]
+						syntaxBox["\[Epsilon]0", "UndefinedSymbol"]
 					}]
 				}],
 			"BoxRules" -> {$syntaxBoxToTeXSeq},
@@ -351,14 +351,14 @@ With[
 		{
 			"Boxes" ->
 				RowBox[{
-					RowBox[{SyntaxBox["f", "UndefinedSymbol"], "[",
-						SyntaxBox["x_", "PatternVariable"],
+					RowBox[{syntaxBox["f", "UndefinedSymbol"], "[",
+						syntaxBox["x_", "PatternVariable"],
 					"]"}],
 					":=",
 					RowBox[{
-						SyntaxBox["x", "PatternVariable"],
+						syntaxBox["x", "PatternVariable"],
 						" ",
-						SyntaxBox["y", "UndefinedSymbol"]
+						syntaxBox["y", "UndefinedSymbol"]
 					}]
 				}],
 			"BoxRules" -> {$syntaxBoxToTeXSeq},
@@ -385,14 +385,14 @@ With[
 		{
 			"Boxes" ->
 				RowBox[{
-					RowBox[{SyntaxBox["\[Phi]", "UndefinedSymbol"], "[",
-						SyntaxBox["\[Epsilon]_", "PatternVariable"],
+					RowBox[{syntaxBox["\[Phi]", "UndefinedSymbol"], "[",
+						syntaxBox["\[Epsilon]_", "PatternVariable"],
 					"]"}],
 					":=",
 					RowBox[{
-						SyntaxBox["\[Epsilon]", "PatternVariable"],
+						syntaxBox["\[Epsilon]", "PatternVariable"],
 						" ",
-						SyntaxBox["\[Epsilon]0", "UndefinedSymbol"]
+						syntaxBox["\[Epsilon]0", "UndefinedSymbol"]
 					}]
 				}],
 			"BoxRules" -> {$syntaxBoxToTeXSeq},
@@ -548,8 +548,8 @@ Test[
 					HoldForm @ {"Boxes", "TeXOptions"},
 					HoldForm @ {
 						"BoxRules", "AnnotationTypesToTeX",
-						"AnnotationTypesNormalizer",
-						"CommonestTypesAsTeXOptions", "BoxesToAnnotationTypes"
+						"CommonestTypesAsTeXOptions", "StringBoxToTypes",
+						"AnnotateComments"
 					}
 				}
 			]

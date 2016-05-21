@@ -35,7 +35,7 @@ Test[
 	,
 	"\
 \\begin{mmaCell}[morelst={morefvcmdparams=\\mathbbm 1},morefunctionlocal={y}]{Input}
-  \\mmaSubSupM{\\int}{r}{\\(\\pmb{\\infty}\\)}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
+  \\mmaSubSupM{\\int}{r}{\\mmaDef{\\(\\pmb{\\infty}\\)}}\\{\\mmaFrac{1}{\\mmaSup{y}{3} \\mmaSup{(1-\\mmaSup{(\\mmaFrac{a}{y})}{2})}{2}}\\}\\(\\mathbbm{d}\\)y
 \\end{mmaCell}"
 	,
 	TestID -> "pure boxes: formatting, syntax: Input"
@@ -73,7 +73,7 @@ Block[{\[Phi]1},
 		,
 		"\
 \\begin{mmaCell}{Input}
-  \\mmaUnderOver{\\(\\pmb{\\sum}\\)}{\\mmaFnc{\\(\\pmb{\\alpha}\\)}=1}{\\(\\pmb{\\pi}\\)}(\\mmaSup{\\mmaDef{\\(\\pmb{\\phi}\\)1}[\\mmaFnc{\\(\\pmb{\\alpha}\\)}]}{2}+\\mmaUnd{\\(\\pmb{\\chi\\omega\\nu\\sigma\\tau}\\)})
+  \\mmaUnderOver{\\(\\pmb{\\sum}\\)}{\\mmaFnc{\\(\\pmb{\\alpha}\\)}=1}{\\mmaDef{\\(\\pmb{\\pi}\\)}}(\\mmaSup{\\mmaDef{\\(\\pmb{\\phi}\\)1}[\\mmaFnc{\\(\\pmb{\\alpha}\\)}]}{2}+\\mmaUnd{\\(\\pmb{\\chi\\omega\\nu\\sigma\\tau}\\)})
 \\end{mmaCell}"
 		,
 		TestID -> "pure boxes: formatting, syntax, non-ASCII symbols: Input"
@@ -142,6 +142,41 @@ Code, Unicode encoding, math replacements"
 		TestID -> "pure boxes: syntax, non-ASCII symbols (private Unicode): \
 Code, Unicode encoding, math replacements: texMathReplacement"
 	]
+]
+
+
+Test[
+	CellToTeX[
+		BoxData[{
+			RowBox[{RowBox[{"f", "::", "usage"}], "=", "\"\<f[] gives something\>\""}],
+			"\[IndentingNewLine]",
+			RowBox[{
+				RowBox[{"f", "[", "]"}], ":=",
+				RowBox[{"Module", "[",
+					RowBox[{"(*", " ",
+						RowBox[{"A", " ", RowBox[{"comment", "."}]}],
+					" ", "*)"}],
+					RowBox[{
+						RowBox[{"{", "x", "}"}], ",",
+						RowBox[{
+							"\"\<A string\>\"", "<>",
+							RowBox[{"ToString", "[", "x", "]"}]
+						}]
+					}],
+				"]"}]
+			}]
+		}]
+		,
+		"Style" -> "Input"
+	]
+	,
+	"\
+\\begin{mmaCell}[morelocal={x}]{Input}
+  f::\\mmaStr{usage}=\"f[] gives something\"
+  f[]:=Module[(* A comment. *)\\{x\\},\"A string\"<>ToString[x]]
+\\end{mmaCell}"
+	,
+	TestID -> "BoxData: comment, string, syntax: Input"
 ]
 
 
