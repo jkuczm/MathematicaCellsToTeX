@@ -12,6 +12,7 @@ TestSuite[{
 	"headRulesToBoxRules.mt",
 	"charToTeX.mt",
 	"defaultAnnotationType.mt",
+	"texMathReplacementRegister.mt",
 	"defaultOrFirst.mt",
 	"commonestAnnotationTypes.mt",
 	"annotationTypesToKeyVal.mt",

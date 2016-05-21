@@ -22,6 +22,13 @@ returns String with TeX code representing given cell. Returned TeX code \
 contains converted cell contents and data extracted from Cell options."
 
 
+CellsToTeXPreamble::usage =
+"\
+CellsToTeXPreamble[] \
+returns String with TeX code setting global properties of mmacells package, \
+suitable for inclusion in document preamble."
+
+
 CellsToTeXException::usage =
 "\
 CellsToTeXException \
@@ -140,6 +147,20 @@ defaultAnnotationType::usage =
 defaultAnnotationType[sym] or defaultAnnotationType[\"name\"] \
 returns String with default syntax annotation type of given symbol sym \
 or of symbol with given \"name\"."
+
+
+texMathReplacement::usage =
+"\
+texMathReplacement[\"str\"] \
+returns String with TeX code representing given String \"str\". By default \
+DownValues of texMathReplacement are used by CellsToTeXPreamble."
+
+
+texMathReplacementRegister::usage =
+"\
+texMathReplacementRegister[\"str\"] \
+defines TeX code math replacement for given String \"str\", if it's not \
+already defined. Returns  \"str\"."
 
 
 makeString::usage =
@@ -1456,11 +1477,15 @@ labelToKeyVal[
 (*optionValueToTeX*)
 
 
+optionValueToTeX[True] = "true"
+
+optionValueToTeX[False] = "false"
+
+optionValueToTeX[subOpts:{OptionsPattern[]}] := optionsToTeX["{", subOpts, "}"]
+
 optionValueToTeX[val_] :=
 	With[{str = ToString[val]},
-		If[StringTake[str, 1] === "{" && StringTake[str, -1] === "}" ||
-				StringFreeQ[str, {"[", "]", ",", "="}]
-		,
+		If[StringMatchQ[str, "{*}"] || StringFreeQ[str, {"[", "]", ",", "="}],
 			str
 		(* else *),
 			"{" <> str <> "}"
@@ -1472,13 +1497,14 @@ optionValueToTeX[val_] :=
 (*optionsToTeX*)
 
 
-optionsToTeX[keyval:{(Rule | RuleDelayed)[_String, _]...}] :=
-	StringJoin[Riffle[(#1 <> "=" <> optionValueToTeX[#2]) & @@@ keyval, ","]]
+optionsToTeX[keyval:{OptionsPattern[]}] :=
+	StringJoin @
+		Riffle[(ToString[#1] <> "=" <> optionValueToTeX[#2]) & @@@ keyval, ","]
 
 optionsToTeX[_String, {}, _String] := ""
 
 optionsToTeX[
-	pre_String, keyval:{(Rule | RuleDelayed)[_String, _]...}, post_String
+	pre_String, keyval:{OptionsPattern[]}, post_String
 ] :=
 	pre <> optionsToTeX[keyval] <> post
 
@@ -1915,6 +1941,22 @@ defaultAnnotationType[
 ] := "DefinedSymbol"
 
 defaultAnnotationType[_Symbol | _String] := "UndefinedSymbol"
+
+
+(* ::Subsubsection:: *)
+(*texMathReplacementRegister*)
+
+
+texMathReplacementRegister[str_String] := (
+	If[! StringQ @ texMathReplacement[str],
+		With[{texCode = StringTrim @ System`Convert`TeXFormDump`MakeTeX[str]},
+			If[texCode =!= "",
+				texMathReplacement[str] = texCode
+			]
+		]
+	];
+	str
+)
 
 
 (* ::Subsubsection:: *)
@@ -2478,8 +2520,11 @@ functionCall:mmaCellGraphicsProcessor[data:{___?OptionQ}] :=
 (*Common operations*)
 
 
-Protect @ Evaluate @ Names[
-	"CellsToTeX`Configuration`" ~~ Except["$"] ~~ Except["`"]...
+Protect @ Evaluate @ DeleteCases[
+	Names["CellsToTeX`Configuration`" ~~ Except["$"] ~~ Except["`"] ...],
+	"texMathReplacement",
+	{1},
+	1
 ]
 
 
@@ -2557,6 +2602,106 @@ functionCall:CellToTeX[boxes_, opts:OptionsPattern[]] :=
 			"MessageTemplate" :> CellsToTeXException::missingProcRes,
 			"AdditionalMessageParameters" -> {processor}
 		] @ dataLookup[data, "TeXCode"]
+	]
+
+
+(* ::Subsubsection:: *)
+(*CellsToTeXPreamble*)
+
+
+Options[CellsToTeXPreamble] = {
+	"Gobble" -> Automatic,
+	"UseListings" -> Automatic,
+	"TeXOptions" -> {},
+	"TeXMathReplacement" -> texMathReplacement,
+	"CatchExceptions" -> True
+}
+
+
+functionCall:CellsToTeXPreamble[OptionsPattern[]] :=
+	If[OptionValue["CatchExceptions"],
+		catchException
+	(* else *),
+		Identity
+	] @ Module[
+		{gobble, useListings, texOptions, mathReplacement}
+		,
+		{gobble, useListings, texOptions, mathReplacement} =
+			OptionValue @
+				{"Gobble", "UseListings", "TeXOptions", "TeXMathReplacement"};
+		
+		If[!MatchQ[texOptions, {OptionsPattern[]}],
+			throwException[functionCall,
+				{"Unsupported", "OptionValue", "TeXOptions"},
+				{texOptions, {"list of options"}}
+			]
+		];
+		If[!MatchQ[mathReplacement, Except[HoldPattern@Symbol[___], _Symbol]],
+			throwException[functionCall,
+				{"Unsupported", "OptionValue", "TeXMathReplacement"},
+				{mathReplacement, {"a symbol"}}
+			]
+		];
+		
+		(* By default gobble default indentation of mmaCell. *)
+		If[gobble === Automatic,
+			gobble =
+				StringLength @ OptionValue[mmaCellProcessor, "Indentation"]
+		];
+		Switch[gobble,
+			_Integer?NonNegative,
+				PrependTo[texOptions, "morefv" -> {"gobble" -> gobble}]
+			,
+			Except[None],
+				throwException[functionCall,
+					{"Unsupported", "OptionValue", "Gobble"},
+					{gobble, {Automatic, None, "non-negative integer"}}
+				]
+		];
+		
+		(*	Listings are used to highlight non-annotated code using TeX
+			environment options. If moving annotations to options is switched
+			off then, by default, don't use listings, otherwise use them.
+			Since listings are, by default, switched on in mmacells package,
+			if we're using them, we can just omit this option. *)
+		If[useListings === Automatic,
+			useListings =
+				Replace[
+					OptionValue[
+						annotateSyntaxProcessor,
+						"CommonestTypesAsTeXOptions"
+					],
+					Except[False] -> None
+				]
+		];
+		Switch[useListings,
+			True | False,
+				PrependTo[texOptions, "uselistings" -> useListings]
+			,
+			Except[None],
+				throwException[functionCall,
+					{"Unsupported", "OptionValue", "UseListings"},
+					{useListings, {Automatic, True, False, None}}
+				]
+		];
+		StringJoin @ Riffle[
+			DeleteCases[
+				Prepend[
+					StringJoin[
+						"\\mmaDefineMathReplacement{",
+							#1[[1, 1]],
+						"}{",
+							#2,
+						"}"
+					]& @@@
+						DownValues @ Evaluate[mathReplacement]
+					,
+					optionsToTeX["\\mmaSet{", texOptions, "}"]
+				],
+				""
+			],
+			"\n"
+		]
 	]
 
 

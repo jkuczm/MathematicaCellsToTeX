@@ -12,6 +12,7 @@ TestSuite[{
 	"Unit/headRulesToBoxRules.mt",
 	"Unit/charToTeX.mt",
 	"Unit/defaultAnnotationType.mt",
+	"Unit/texMathReplacementRegister.mt",
 	"Unit/defaultOrFirst.mt",
 	"Unit/commonestAnnotationTypes.mt",
 	"Unit/annotationTypesToKeyVal.mt",
@@ -47,5 +48,7 @@ TestSuite[{
 	"Integration/toInputFormProcessor.mt",
 	"Integration/annotateSyntaxProcessor.mt",
 	"Integration/mmaCellGraphicsProcessor.mt",
-	"Integration/CellToTeX.mt"
+	"Integration/CellToTeX.mt",
+	"Integration/CellsToTeXPreamble.mt",
+	"Integration/fullNotebooks.mt"
 }]
