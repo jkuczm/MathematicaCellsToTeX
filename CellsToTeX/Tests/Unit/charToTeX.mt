@@ -16,12 +16,14 @@ PrependTo[$ContextPath, "CellsToTeX`Configuration`"]
 (*Tests*)
 
 
-Test[
-	charToTeX["\[PlusMinus]"]
-	,
-	"\\(\\pm\\)"
-	,
-	TestID -> "\[PlusMinus]"
+Block[{$commandCharsToTeX = {"?" -> "test1", "[" -> "test2", "]" -> "test3"}},
+	Test[
+		charToTeX["\[PlusMinus]"]
+		,
+		"?(?pm?)"
+		,
+		TestID -> "\[PlusMinus]"
+	]
 ]
 
 
