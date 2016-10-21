@@ -3,10 +3,10 @@
 [![releases](http://img.shields.io/github/release/jkuczm/MathematicaCellsToTeX.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/releases)
 [![SemVer 2.0.0](http://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 [![license MIT](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/blob/master/LICENSE)
-[![Mathematica 8.0 - 10.4](http://img.shields.io/badge/Mathematica-8.0 -- 10.4-brightgreen.svg)](#compatibility)
+[![Mathematica 8.0 - 11.0](http://img.shields.io/badge/Mathematica-8.0 -- 11.0-brightgreen.svg)](#compatibility)
 
 
-Convert Mathematica cells to TeX, retaining formatting.
+Convert *Mathematica* cells to TeX, retaining formatting.
 
 
 * [Description](#description)
@@ -24,7 +24,7 @@ Convert Mathematica cells to TeX, retaining formatting.
 
 ## Description
 
-This package provides functions converting Mathematica cells to specific type
+This package provides functions converting *Mathematica* cells to specific type
 of TeX code, compatible with [mmacells](https://github.com/jkuczm/mmacells)
 package. Compilation of this TeX code results in output resembling FrontEnd
 appearance of converted cells.
@@ -61,7 +61,7 @@ To load CellsToTeX package evaluate: ``Needs["CellsToTeX`"]``.
    file.
 
 2. Extract downloaded `CellsToTeX.zip` to any directory which is on
-   Mathematica `$Path`, e.g. to one obtained by evaluating
+   *Mathematica* `$Path`, e.g. to one obtained by evaluating
    `FileNameJoin[{$UserBaseDirectory,"Applications"}]`.
 
 3. Install dependency:
@@ -83,12 +83,12 @@ Import["https://raw.githubusercontent.com/jkuczm/MathematicaCellsToTeX/master/No
 
 This package contains extensive
 [automatic test suite](https://github.com/jkuczm/MathematicaCellsToTeX/tree/master/CellsToTeX/Tests).
-Package is being tested with Mathematica versions 8.0, 9.0, 10.0, 10.1, 10.2,
-10.3 and 10.4 on Linux. Since it doesn't contain any OS specific code it should
-work with above versions on all operating systems.
+Package is tested with all *Mathematica* major and minor versions from 8.0 to
+11.0 on Linux. Since it doesn't contain any OS specific code it should work
+with above versions on all operating systems.
 
 There's also no obvious reason for package not to work on earlier (6.0+)
-versions of Mathematica.
+versions of *Mathematica*.
 
 
 
