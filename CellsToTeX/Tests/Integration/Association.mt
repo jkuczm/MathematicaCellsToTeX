@@ -12,6 +12,16 @@ Get["CellsToTeX`"]
 PrependTo[$ContextPath, "CellsToTeX`Backports`"]
 
 
+pre11Key = If[$VersionNumber >= 11, Identity, Key]
+
+post11QuietExtractkeyw =
+	If[$VersionNumber >= 11,
+		Function[Null, Quiet[#, Extract::keyw], HoldFirst]
+	(* else *),
+		Identity
+	]
+
+
 (* ::Section:: *)
 (*Tests*)
 
@@ -104,18 +114,18 @@ Module[{b},
 
 Module[{a, b, c},
 	Test[
-		Extract[Association[a -> b], Key[c]]
+		Extract[Association[a -> b], Key[c]] // post11QuietExtractkeyw
 		,
-		Missing["KeyAbsent", Key[c]]
+		Missing["KeyAbsent", pre11Key[c]]
 		,
 		TestID -> "Extract: no head: missing"
 	]
 ]
 Module[{a, b},
 	Test[
-		Extract[Association[a -> b], Key[_]]
+		Extract[Association[a -> b], Key[_]] // post11QuietExtractkeyw
 		,
-		Missing["KeyAbsent", Key[_]]
+		Missing["KeyAbsent", pre11Key[_]]
 		,
 		TestID -> "Extract: no head: missing, \
 but existing if lookedup as pattern"
@@ -123,9 +133,9 @@ but existing if lookedup as pattern"
 ]
 Module[{a, b},
 	Test[
-		Extract[Association[_ -> b], Key[a]]
+		Extract[Association[_ -> b], Key[a]] // post11QuietExtractkeyw
 		,
-		Missing["KeyAbsent", Key[a]]
+		Missing["KeyAbsent", pre11Key[a]]
 		,
 		TestID -> "Extract: no head: missing, \
 but lookedup match existing as pattern"
@@ -133,7 +143,7 @@ but lookedup match existing as pattern"
 ]
 Module[{a, b},
 	Test[
-		Extract[Association[a -> b], "c"]
+		Extract[Association[a -> b], "c"] // post11QuietExtractkeyw
 		,
 		Missing["KeyAbsent", "c"]
 		,
@@ -180,16 +190,16 @@ Module[{a, leaked = False},
 
 Module[{a, b, c},
 	Test[
-		Extract[Association[a -> b], Key[c], h]
+		Extract[Association[a -> b], Key[c], h] // post11QuietExtractkeyw
 		,
-		h[Missing["KeyAbsent", Key[c]]]
+		h[Missing["KeyAbsent", pre11Key[c]]]
 		,
 		TestID -> "Extract: with head: missing"
 	]
 ]
 Module[{a, b},
 	Test[
-		Extract[Association[a -> b], "c", h]
+		Extract[Association[a -> b], "c", h] // post11QuietExtractkeyw
 		,
 		h[Missing["KeyAbsent", "c"]]
 		,

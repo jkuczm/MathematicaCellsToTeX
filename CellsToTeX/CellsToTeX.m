@@ -1074,19 +1074,20 @@ handleException[
 ] :=
 	With[
 		{
-			unevaluatedMsgName =
-				Extract[assoc, "MessageTemplate", Unevaluated], 
-			msgParam =
-				Lookup[
-					assoc, "MessageParameters",
-					{HoldForm["Unknown"], HoldForm[tag]}
-				]
+			heldMsgName =
+				Quiet[Extract[assoc, "MessageTemplate", Hold], Extract::keyw]
 		}
 		,
 		(
-			Message[unevaluatedMsgName, Sequence @@ msgParam];
+			Message @@ Join[
+				heldMsgName,
+				Hold @@ Lookup[
+					assoc, "MessageParameters",
+					{HoldForm["Unknown"], HoldForm[tag]}
+				]
+			];
 			failure
-		) /; unevaluatedMsgName =!= Missing["KeyAbsent", "MessageTemplate"]
+		) /; heldMsgName =!= Hold@Missing["KeyAbsent", "MessageTemplate"]
 	]
 
 handleException[val_, tag_CellsToTeXException] := (
