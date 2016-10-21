@@ -1,4 +1,5 @@
 TestSuite[{
+	"FirstCase.mt",
 	"Association.mt",
 	"AssociationQ.mt",
 	"Lookup.mt",

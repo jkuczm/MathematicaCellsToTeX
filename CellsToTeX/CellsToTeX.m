@@ -646,6 +646,26 @@ ClearAll["`*"]
 
 
 If[$VersionNumber < 10,
+	FirstCase::usage = "\
+FirstCase[{e1, e2, ...}, pattern] \
+gives the first ei to match pattern, or Missing[\"NotFound\"] if none \
+matching pattern is found.\
+
+FirstCase[{e1, e2, ...}, pattern -> rhs] \
+gives the value of rhs corresponding to the first ei to match pattern.\
+
+FirstCase[expr, pattern, default] \
+gives default if no element matching pattern is found.\
+
+FirstCase[expr, pattern, default, levelspec] \
+finds only objects that appear on levels specified by levelspec.\
+
+FirstCase[pattern] \
+represents an operator form of FirstCase that can be applied to an expression.\
+
+This is a backport of FirstCase from Mathematica versions >= 10.";
+
+
 	Association::usage = "\
 Association[key1 -> val1, key2 :> val2, ...] \
 is a very limited backport of Association from Mathematica version 10.\
@@ -810,6 +830,27 @@ addIncorrectArgsDefinition /@
 
 (* ::Subsection:: *)
 (*Backports*)
+
+
+(* ::Subsubsection:: *)
+(*FirstCase*)
+
+
+If[$VersionNumber < 10,
+	SetAttributes[FirstCase, HoldRest];
+	
+	Options[FirstCase] = Options[Cases];
+	
+	FirstCase[
+		expr_, pattOrRule_, Shortest[default_:Missing["NotFound"], 1],
+		Shortest[levelspec_:{1}, 2], opts:OptionsPattern[]
+	] :=
+		Replace[Cases[expr, pattOrRule, levelspec, 1, opts],
+			{{} :> default, {match_} :> match}
+		];
+	
+	FirstCase[pattOrRule_][expr_] := FirstCase[expr, pattOrRule]
+]
 
 
 (* ::Subsubsection:: *)
