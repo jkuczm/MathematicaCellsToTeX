@@ -862,22 +862,11 @@ If[$VersionNumber < 10,
 	
 	
 	Association /: Extract[
-		assoc_Association, fullKey:(Key[key_] | key_String)
+		assoc_Association, fullKey:(Key[key_] | key_String), head_:Identity
 	] :=
-		Lookup[assoc, key, Missing["KeyAbsent", fullKey]];
-	
-	Association /: Extract[
-		Association[rules___], fullKey:(Key[key_] | key_String), head_
-	] :=
-		head @@ Replace[key,
-			Append[
-				Replace[
-					Flatten[{rules}],
-					_[lhs_, rhs_] :> Verbatim[lhs] -> HoldComplete[rhs],
-					{1}
-				],
-				_ -> HoldComplete[Missing["KeyAbsent", fullKey]]
-			]
+		FirstCase[assoc,
+			_[Verbatim[key], val_] :> head@val,
+			head@Missing["KeyAbsent", fullKey]
 		];
 	
 	
@@ -913,11 +902,7 @@ If[$VersionNumber < 10,
 	SetAttributes[Lookup, HoldAllComplete];
 	
 	Lookup[assoc_?AssociationQ, key_, default_] :=
-		Replace[key,
-			(* MapAt[Verbatim, Flatten[{rules}], {All, 1}]
-				doesn't work in v8. *)
-			Append[MapAt[Verbatim, #, {1}]& /@ (List @@ assoc), _ :> default]
-		];
+		FirstCase[assoc, _[Verbatim[key], val_] :> val, default];
 	
 	Lookup[assoc_?AssociationQ, key_] :=
 		Lookup[assoc, key, Missing["KeyAbsent", key]]
@@ -1636,38 +1621,31 @@ templateBoxDisplayBoxes[TemplateBox[boxes_, tag_, opts___]] :=
 
 
 extractMessageLink[boxes_] :=
-	Replace[
-		Cases[
-			System`Convert`CommonDump`RemoveLinearSyntax[
-				boxes,
-				$convertRecursiveOption -> True
-			]
-			,
-			ButtonBox[
-				content_ /;
-					MatchQ[
-						ToString @ DisplayForm[content],
-						">>" | "\[RightSkeleton]"
-					]
-				,
-				___,
-				(Rule | RuleDelayed)[
-					ButtonData,
-					uri_String /; StringMatchQ[uri, "paclet:ref/*"]
-				],
-				___
-			] :>
-				StringDrop[uri, 11]
-			,
-			{0, Infinity}
-			,
-			1
+	FirstCase[
+		System`Convert`CommonDump`RemoveLinearSyntax[
+			boxes,
+			$convertRecursiveOption -> True
 		]
 		,
-		{
-			{link_} :> link,
-			{} -> Missing["NotFound"]
-		}
+		ButtonBox[
+			content_ /;
+				MatchQ[
+					ToString @ DisplayForm[content],
+					">>" | "\[RightSkeleton]"
+				]
+			,
+			___,
+			(Rule | RuleDelayed)[
+				ButtonData,
+				uri_String /; StringMatchQ[uri, "paclet:ref/*"]
+			],
+			___
+		] :>
+			StringDrop[uri, 11]
+		,
+		Missing["NotFound"]
+		,
+		{0, Infinity}
 	]
 
 
