@@ -79,6 +79,19 @@ Test[
 	TestID -> "TooltipBox"
 ]
 
+Test[
+	GridBox[{{"a1", "a2", "a3"}, {"b1", "b2", "b3"}},
+		AllowedDimensions -> Automatic
+	] //
+		tmpBoxesToString
+	,
+	"\
+a1\ta2\ta3
+b1\tb2\tb3"
+	,
+	TestID -> "GridBox"
+]
+
 Module[{a, b, c, d, e},
 	Test[
 		PaneSelectorBox[

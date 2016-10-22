@@ -1850,6 +1850,9 @@ $linearBoxesToTeX = {
 	,
 	tb:TemplateBox[_, _, ___] :> makeString[templateBoxDisplayBoxes[tb]]
 	,
+	GridBox[grid:{___List}, ___] :>
+		StringJoin@Riffle[Riffle[makeString /@ #, "\t"]& /@ grid, "\n"]
+	,
 	PaneSelectorBox[
 		rules:{(_Rule | _RuleDelayed)...},
 		HoldPattern[Dynamic][v_, ___] | v_,
