@@ -79,6 +79,43 @@ Test[
 	TestID -> "TooltipBox"
 ]
 
+Module[{a, b, c, d, e},
+	Test[
+		PaneSelectorBox[
+			{
+				a -> "l",
+				b -> PaneSelectorBox[{c -> "m"}, d, "n"],
+				e :> "o"
+			},
+			b
+		] // tmpBoxesToString
+		,
+		"n"
+		,
+		TestID -> "PaneSelectorBox"
+	]
+]
+Module[{a, b},
+	Test[
+		PaneSelectorBox[{a -> "l"}, b, ContentPadding -> True] //
+			tmpBoxesToString
+		,
+		" "
+		,
+		TestID -> "PaneSelectorBox: option instead of default"
+	]
+]
+Module[{a, b, f},
+	Test[
+		PaneSelectorBox[{a :> "p", b -> "q"}, Dynamic[a, f]] //
+			tmpBoxesToString
+		,
+		"p"
+		,
+		TestID -> "PaneSelectorBox: Dynamic"
+	]
+]
+
 Test[
 	TemplateBox[{"k", "l"}, tag1,
 		DisplayFunction -> (

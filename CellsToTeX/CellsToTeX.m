@@ -1842,11 +1842,21 @@ $basicBoxes = _BoxData | _TextData | _RowBox | _String | _List
 
 
 $linearBoxesToTeX = {
-	RowBox[l_List] :> makeString[l],
+	RowBox[l_List] :> makeString[l]
+	,
 	(StyleBox | ButtonBox | InterpretationBox | FormBox | TagBox | TooltipBox)[
 		contents_, ___
-	] :> makeString[contents],
+	] :> makeString[contents]
+	,
 	tb:TemplateBox[_, _, ___] :> makeString[templateBoxDisplayBoxes[tb]]
+	,
+	PaneSelectorBox[
+		rules:{(_Rule | _RuleDelayed)...},
+		HoldPattern[Dynamic][v_, ___] | v_,
+		Shortest[def_:" "],
+		OptionsPattern[]
+	] :>
+		makeString@Replace[v, Append[rules, _ :> def]]
 }
 
 
