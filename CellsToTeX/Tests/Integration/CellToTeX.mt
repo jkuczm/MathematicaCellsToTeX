@@ -72,6 +72,21 @@ UsingFrontEnd @ Test[
 ]
 
 
+Test[
+	CellToTeX[
+		RowBox[{RowBox[{"#", " ", "##", " ", "#something", " ", "##4"}], "&"}],
+		"Style" -> "Input"
+	]
+	,
+	"\
+\\begin{mmaCell}[morepattern={\\#, \\#\\#, \\#something, \\#\\#4}]{Input}
+  # ## #something ##4&
+\\end{mmaCell}"
+	,
+	TestID -> "pure boxes: pure function with slots: Input"
+]
+
+
 Block[{\[Phi]1},
 	\[Phi]1[x_] := x;
 	
