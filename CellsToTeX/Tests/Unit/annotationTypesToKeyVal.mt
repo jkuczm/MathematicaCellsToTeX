@@ -71,6 +71,18 @@ Test[
 ]
 
 
+Test[
+	annotationTypesToKeyVal[
+		{"a#%" -> "Type1", "V{}\\5" -> "Type1"},
+		$testAnnotationTypeToKey
+	]
+	,
+	{"type1" -> {"a\\#\\%", "V\\{\\}\\\\5"}}
+	,
+	TestID -> "TeX special characters"
+]
+
+
 (* ::Subsection:: *)
 (*Incorrect arguments*)
 
