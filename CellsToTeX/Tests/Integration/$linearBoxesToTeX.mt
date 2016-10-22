@@ -71,6 +71,15 @@ Test[
 ]
 
 Test[
+	TooltipBox[TooltipBox["k", "l", Background -> None], "m"] //
+		tmpBoxesToString
+	,
+	"k"
+	,
+	TestID -> "TooltipBox"
+]
+
+Test[
 	TemplateBox[{"k", "l"}, tag1,
 		DisplayFunction -> (
 			TemplateBox[{#1, "m", #2}, tag2,

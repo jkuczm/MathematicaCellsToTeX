@@ -1843,7 +1843,7 @@ $basicBoxes = _BoxData | _TextData | _RowBox | _String | _List
 
 $linearBoxesToTeX = {
 	RowBox[l_List] :> makeString[l],
-	(StyleBox | ButtonBox | InterpretationBox | FormBox | TagBox )[
+	(StyleBox | ButtonBox | InterpretationBox | FormBox | TagBox | TooltipBox)[
 		contents_, ___
 	] :> makeString[contents],
 	tb:TemplateBox[_, _, ___] :> makeString[templateBoxDisplayBoxes[tb]]
