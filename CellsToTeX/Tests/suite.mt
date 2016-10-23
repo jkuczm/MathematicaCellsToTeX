@@ -36,6 +36,7 @@ TestSuite[{
 	"Unit/CellsToTeXException.mt",
 	"Unit/CellToTeX.mt"
 	,
+	"Integration/FirstCase.mt",
 	"Integration/Association.mt",
 	"Integration/AssociationQ.mt",
 	"Integration/Lookup.mt",

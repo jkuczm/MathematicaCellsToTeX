@@ -646,6 +646,26 @@ ClearAll["`*"]
 
 
 If[$VersionNumber < 10,
+	FirstCase::usage = "\
+FirstCase[{e1, e2, ...}, pattern] \
+gives the first ei to match pattern, or Missing[\"NotFound\"] if none \
+matching pattern is found.\
+
+FirstCase[{e1, e2, ...}, pattern -> rhs] \
+gives the value of rhs corresponding to the first ei to match pattern.\
+
+FirstCase[expr, pattern, default] \
+gives default if no element matching pattern is found.\
+
+FirstCase[expr, pattern, default, levelspec] \
+finds only objects that appear on levels specified by levelspec.\
+
+FirstCase[pattern] \
+represents an operator form of FirstCase that can be applied to an expression.\
+
+This is a backport of FirstCase from Mathematica versions >= 10.";
+
+
 	Association::usage = "\
 Association[key1 -> val1, key2 :> val2, ...] \
 is a very limited backport of Association from Mathematica version 10.\
@@ -813,6 +833,27 @@ addIncorrectArgsDefinition /@
 
 
 (* ::Subsubsection:: *)
+(*FirstCase*)
+
+
+If[$VersionNumber < 10,
+	SetAttributes[FirstCase, HoldRest];
+	
+	Options[FirstCase] = Options[Cases];
+	
+	FirstCase[
+		expr_, pattOrRule_, Shortest[default_:Missing["NotFound"], 1],
+		Shortest[levelspec_:{1}, 2], opts:OptionsPattern[]
+	] :=
+		Replace[Cases[expr, pattOrRule, levelspec, 1, opts],
+			{{} :> default, {match_} :> match}
+		];
+	
+	FirstCase[pattOrRule_][expr_] := FirstCase[expr, pattOrRule]
+]
+
+
+(* ::Subsubsection:: *)
 (*Association*)
 
 
@@ -821,22 +862,11 @@ If[$VersionNumber < 10,
 	
 	
 	Association /: Extract[
-		assoc_Association, fullKey:(Key[key_] | key_String)
+		assoc_Association, fullKey:(Key[key_] | key_String), head_:Identity
 	] :=
-		Lookup[assoc, key, Missing["KeyAbsent", fullKey]];
-	
-	Association /: Extract[
-		Association[rules___], fullKey:(Key[key_] | key_String), head_
-	] :=
-		head @@ Replace[key,
-			Append[
-				Replace[
-					Flatten[{rules}],
-					_[lhs_, rhs_] :> Verbatim[lhs] -> HoldComplete[rhs],
-					{1}
-				],
-				_ -> HoldComplete[Missing["KeyAbsent", fullKey]]
-			]
+		FirstCase[assoc,
+			_[Verbatim[key], val_] :> head@val,
+			head@Missing["KeyAbsent", fullKey]
 		];
 	
 	
@@ -872,11 +902,7 @@ If[$VersionNumber < 10,
 	SetAttributes[Lookup, HoldAllComplete];
 	
 	Lookup[assoc_?AssociationQ, key_, default_] :=
-		Replace[key,
-			(* MapAt[Verbatim, Flatten[{rules}], {All, 1}]
-				doesn't work in v8. *)
-			Append[MapAt[Verbatim, #, {1}]& /@ (List @@ assoc), _ :> default]
-		];
+		FirstCase[assoc, _[Verbatim[key], val_] :> val, default];
 	
 	Lookup[assoc_?AssociationQ, key_] :=
 		Lookup[assoc, key, Missing["KeyAbsent", key]]
@@ -1048,19 +1074,20 @@ handleException[
 ] :=
 	With[
 		{
-			unevaluatedMsgName =
-				Extract[assoc, "MessageTemplate", Unevaluated], 
-			msgParam =
-				Lookup[
-					assoc, "MessageParameters",
-					{HoldForm["Unknown"], HoldForm[tag]}
-				]
+			heldMsgName =
+				Quiet[Extract[assoc, "MessageTemplate", Hold], Extract::keyw]
 		}
 		,
 		(
-			Message[unevaluatedMsgName, Sequence @@ msgParam];
+			Message @@ Join[
+				heldMsgName,
+				Hold @@ Lookup[
+					assoc, "MessageParameters",
+					{HoldForm["Unknown"], HoldForm[tag]}
+				]
+			];
 			failure
-		) /; unevaluatedMsgName =!= Missing["KeyAbsent", "MessageTemplate"]
+		) /; heldMsgName =!= Hold@Missing["KeyAbsent", "MessageTemplate"]
 	]
 
 handleException[val_, tag_CellsToTeXException] := (
@@ -1595,38 +1622,31 @@ templateBoxDisplayBoxes[TemplateBox[boxes_, tag_, opts___]] :=
 
 
 extractMessageLink[boxes_] :=
-	Replace[
-		Cases[
-			System`Convert`CommonDump`RemoveLinearSyntax[
-				boxes,
-				$convertRecursiveOption -> True
-			]
-			,
-			ButtonBox[
-				content_ /;
-					MatchQ[
-						ToString @ DisplayForm[content],
-						">>" | "\[RightSkeleton]"
-					]
-				,
-				___,
-				(Rule | RuleDelayed)[
-					ButtonData,
-					uri_String /; StringMatchQ[uri, "paclet:ref/*"]
-				],
-				___
-			] :>
-				StringDrop[uri, 11]
-			,
-			{0, Infinity}
-			,
-			1
+	FirstCase[
+		System`Convert`CommonDump`RemoveLinearSyntax[
+			boxes,
+			$convertRecursiveOption -> True
 		]
 		,
-		{
-			{link_} :> link,
-			{} -> Missing["NotFound"]
-		}
+		ButtonBox[
+			content_ /;
+				MatchQ[
+					ToString @ DisplayForm[content],
+					">>" | "\[RightSkeleton]"
+				]
+			,
+			___,
+			(Rule | RuleDelayed)[
+				ButtonData,
+				uri_String /; StringMatchQ[uri, "paclet:ref/*"]
+			],
+			___
+		] :>
+			StringDrop[uri, 11]
+		,
+		Missing["NotFound"]
+		,
+		{0, Infinity}
 	]
 
 

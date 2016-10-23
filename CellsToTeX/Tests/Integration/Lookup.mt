@@ -31,6 +31,17 @@ Module[{a, b},
 ]
 
 
+Module[{a, b},
+	Test[
+		Lookup[Association[_a -> b], _a]
+		,
+		b
+		,
+		TestID -> "No default: key exist, but not if matched as pattern"
+	]
+]
+
+
 Module[{a, b, c},
 	Test[
 		Lookup[Association[a -> b], c]
@@ -127,20 +138,20 @@ Module[{a, b},
 ]
 
 
-Module[{a, b, testVar},
+Module[{a, b, leaked = False},
 	Test[
-		Lookup[Association[a -> b], a, testVar = "Evalauation leaked"]
+		Lookup[Association[a -> b], a, leaked = True]
 		,
 		b
 		,
 		TestID -> "With default: default evalaution leak: key exist"
 	];
-	TestMatch[
-		testVar
+	Test[
+		leaked
 		,
-		HoldPattern[testVar]
+		False
 		,
-		TestID -> "With default: default evalaution leak: key exist: test Var"
+		TestID -> "With default: default evalaution leak: key exist: leaked"
 	]
 ]
 
