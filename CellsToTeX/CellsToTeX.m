@@ -393,6 +393,19 @@ Begin["`Internal`"]
 ClearAll["`*"]
 
 
+$texEscape::usage =
+"\
+$texEscape \
+is a String used to escape a character in non-verbatim TeX code."
+
+
+$texSpecialChars::usage =
+"\
+$texSpecialChars \
+is a string pattern matching characters that need to be escaped in \
+non-verbatim TeX code."
+
+
 throwException::usage =
 "\
 throwException[thrownBy, {errType, errSubtype, ...}, {val1, val2, ...}] or \
@@ -978,6 +991,20 @@ addIncorrectArgsDefinition /@
 
 
 (* ::Subsubsection:: *)
+(*$texEscape*)
+
+
+$texEscape = "\\"
+
+
+(* ::Subsubsection:: *)
+(*$texSpecialChars*)
+
+
+$texSpecialChars = "#" | "%" | "{" | "}" | "\\"
+
+
+(* ::Subsubsection:: *)
 (*throwException*)
 
 
@@ -1404,7 +1431,10 @@ annotationTypesToKeyVal[
 	symToTypes:{(_Rule | _RuleDelayed)...},
 	typesToKeys:{(_Rule | _RuleDelayed)...}
 ] :=
-	Replace[#[[1, 2]], typesToKeys] -> #[[All, 1]]& /@
+	(
+		Replace[#[[1, 2]], typesToKeys] ->
+			StringReplace[#[[All, 1]], c:$texSpecialChars :> $texEscape <> c]
+	)& /@
 		GatherBy[
 			Cases[
 				symToTypes,
