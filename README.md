@@ -1,9 +1,9 @@
 # Cells to TeX
 
-[![releases](http://img.shields.io/github/release/jkuczm/MathematicaCellsToTeX.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/releases)
-[![SemVer 2.0.0](http://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
-[![license MIT](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/blob/master/LICENSE)
-[![Mathematica 8.0 - 11.0](http://img.shields.io/badge/Mathematica-8.0 -- 11.0-brightgreen.svg)](#compatibility)
+[![releases](https://img.shields.io/github/release/jkuczm/MathematicaCellsToTeX.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/releases)
+[![Mathematica 8.0 - 11.0](https://img.shields.io/badge/Mathematica-8.0_--_11.0-brightgreen.svg)](#compatibility)
+[![license MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jkuczm/MathematicaCellsToTeX/blob/master/LICENSE)
+[![SemVer 2.0.0](https://img.shields.io/badge/SemVer-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 
 
 Convert *Mathematica* cells to TeX, retaining formatting.
@@ -40,41 +40,51 @@ on Mathematica Stack Exchange.
 
 ### Automatic installation
 
-To install CellsToTeX package evaluate:
+To install newest version of CellsToTeX package,
+in *Mathematica* version 10 or newer, evaluate following code:
 ```Mathematica
-Import["https://raw.githubusercontent.com/jkuczm/MathematicaCellsToTeX/master/BootstrapInstall.m"]
+PacletInstall@"http://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.2.2/CellsToTeX-0.2.2.paclet"
 ```
 
-Note that this will also install dependency package
-[SyntaxAnnotations](https://github.com/jkuczm/MathematicaSyntaxAnnotations)
-and
-[ProjectInstaller](https://github.com/lshifr/ProjectInstaller)
-package, if you don't have it already installed.
+Note that above requires allowing *Mathematica* to use the Internet.
 
-To load CellsToTeX package evaluate: ``Needs["CellsToTeX`"]``.
+To load CellsToTeX package evaluate:
+```Mathematica
+Needs@"CellsToTeX`"
+```
+
+To uninstall CellsToTeX package evaluate:
+```Mathematica
+PacletUninstall@"CellsToTeX"
+```
 
 
 ### Manual installation
 
-1. Download latest released
-   [CellsToTeX.zip](https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.2.1/CellsToTeX.zip)
-   file.
+If in your setup *Mathematica* doesn't have Internet access,
+or you're using version older than 10, download
+[CellsToTeX-0.2.2.paclet](https://github.com/jkuczm/MathematicaCellsToTeX/releases/download/v0.2.2/CellsToTeX-0.2.2.paclet)
+file and evaluate `PacletInstall` with path to downloaded file:
+```Mathematica
+PacletInstall@"path/to/downloaded/CellsToTeX-0.2.2.paclet"
+```
 
-2. Extract downloaded `CellsToTeX.zip` to any directory which is on
-   *Mathematica* `$Path`, e.g. to one obtained by evaluating
-   `FileNameJoin[{$UserBaseDirectory,"Applications"}]`.
+To load CellsToTeX package evaluate:
+```Mathematica
+Needs@"CellsToTeX`"
+```
 
-3. Install dependency:
-   [SyntaxAnnotations](https://github.com/jkuczm/MathematicaSyntaxAnnotations).
-
-4. To load the package evaluate: ``Needs["CellsToTeX`"]``
+To uninstall CellsToTeX package evaluate:
+```Mathematica
+PacletUninstall@"CellsToTeX"
+```
 
 
 ### No installation
 
 To use package directly from the Web, without installation, evaluate:
 ```Mathematica
-Import["https://raw.githubusercontent.com/jkuczm/MathematicaCellsToTeX/master/NoInstall.m"]
+Import@"https://raw.githubusercontent.com/jkuczm/MathematicaCellsToTeX/master/NoInstall.m"
 ```
 
 
@@ -87,8 +97,9 @@ Package is tested with all *Mathematica* major and minor versions from 8.0 to
 11.0 on Linux. Since it doesn't contain any OS specific code it should work
 with above versions on all operating systems.
 
-There's also no obvious reason for package not to work on earlier (6.0+)
-versions of *Mathematica*.
+There's also no obvious reason for package not to work on older (6.0+)
+and newer (11.1+) versions of *Mathematica*,
+but it was not tested with these versions.
 
 
 
@@ -102,9 +113,6 @@ If you find any bugs or have feature request please create an
 ## Contributing
 
 Feel free to fork and send pull requests.
-
-If you want to use Ant scripts from this repository you will also need to
-install [WWBCommon](https://github.com/jkuczm/WWBCommon) project.
 
 All contributions are welcome!
 
