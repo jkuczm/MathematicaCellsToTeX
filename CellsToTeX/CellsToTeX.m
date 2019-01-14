@@ -773,17 +773,17 @@ Please inform the package maintainer about this problem."
 (*Implementation*)
 
 
-Begin["`Private`"]
-
-
-ClearAll["`*"]
-
-
 (* ::Subsection:: *)
 (*Dependencies*)
 
 
-Needs["SyntaxAnnotations`"]
+Needs["`SyntaxAnnotations`"]
+
+
+Begin["`Private`"]
+
+
+ClearAll["`*"]
 
 
 $ContextPath =
@@ -2293,10 +2293,10 @@ functionCall:annotateSyntaxProcessor[data:{___?OptionQ}] :=
 						Automatic
 					(* else *),
 						(* Delete String type annotation rule. *)
-						Delete[SyntaxAnnotations`Private`$stringBoxToTypes, 2]
+						Delete[CellsToTeX`SyntaxAnnotations`Private`$stringBoxToTypes, 2]
 					]
 					,
-					_String?SyntaxAnnotations`Private`symbolNameQ ->
+					_String?CellsToTeX`SyntaxAnnotations`Private`symbolNameQ ->
 						{"DefinedSymbol"}
 				} // Flatten
 		];

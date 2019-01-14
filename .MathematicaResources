@@ -1,8 +1,7 @@
 Resources[
     Version[1],
     Sources[
-        Directory["~"],
-        Directory["dependencies"]
+        Directory["~"]
     ],
     ExecutionBuildCommand["None"],
     Paclet[
